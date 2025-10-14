@@ -1,16 +1,14 @@
-const express = require("express");
-const cors = require("cors");
-
+const express = require('express');
 const app = express();
-app.use(cors());
-app.use(express.json());
+const authRoutes = require('./src/modules/auth/auth.controller'); // Importa tu router
+//aqui ponene la rutas de los mosulos que les de para probarque funcionen
 
-app.get("/", (req, res) => {
-  res.send("¡Servidor Express corriendo!");
-});
+app.use(express.json()); // Middleware para leer JSON en el body
 
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
-});
 
+// Monta las rutas del módulo de autenticación bajo el prefijo /api/v1/auth
+app.use('/api/v1/auth', authRoutes);
+//puedes agregar mas rutas de otros modulos si quieres probarlos
+
+const PORT = 3000;
+app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));
