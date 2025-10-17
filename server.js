@@ -1,16 +1,19 @@
-const express = require("express");
-const cors = require("cors");
-
+const express = require('express');
 const app = express();
-app.use(cors());
-app.use(express.json());
+const authRoutes = require('./src/modules/auth/auth.controller'); // Importa tu router
+const connectDB = require('./src/config/database');
 
-app.get("/", (req, res) => {
-  res.send("¡Servidor Express corriendo!");
-});
+// Conectar a la base de datos
+connectDB();    
+        
+//aqui ponene la rutas de los mosulos que les de para probarque funcionen
 
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`Servidor escuchando en http://localhost:${PORT}`);
-});
+// app.use(express.json()); 
 
+
+// Monta las rutas del módulo de autenticación bajo el prefijo /api/students
+app.use('/api/students', authRoutes);
+//puedes agregar mas rutas de otros modulos si quieres probarlos
+
+const PORT = 3000;
+app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));
