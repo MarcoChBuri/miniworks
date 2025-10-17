@@ -18,3 +18,5 @@ const protect = (req, res, next) => {
 module.exports = { protect };
 
 //esto es para la seguridad de las rutas privadas, pero como no estamos usando JWT ahora , lo implementaremos mas adelante
+
+//ESTO NOSE COMO FUNCIONA ASI Q LO EMITIRE HASTA Q LO ENTIENDA XD

@@ -1,4 +1,3 @@
-// Importar dependencias del servicio
 const bcrypt = require('bcrypt');
 const userRepository = require('../../shared/repositories/user.repository');
 //require('dotenv').config();
@@ -12,7 +11,10 @@ class AuthService {
         }
 
         // SIN JWT: Devolvemos solo el ID y Rol para la prueba
-        return { id: user.id, rol: user.rol }; 
+        return {     id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    rol: user.rol }; 
     }
     
     // NOTA: ELIMINAMOS EL MÉTODO verifyToken()

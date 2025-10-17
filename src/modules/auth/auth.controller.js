@@ -2,12 +2,29 @@ const express = require('express');
 const router = express.Router();
 const authService = require('./auth.service');
 const perfilService = require('./perfil.service');
-//const { protect } = require('../../middlewares/auth.middleware'); // ELIMINADO
+//const { protect } = require('../../middlewares/auth.middleware'); // esto es para el jwt
 
-// --- RUTAS PÚBLICAS ---
+router.get('/users', async (req, res) => {
+    try {
+        const users = await perfilService.getAllUsers();
+        res.json(users);
+    } catch (error) {
+        res.status(error.status || 500).json({ message: error.message || "Error al cargar usuarios." });
+    }
+});
 
-// [POST] /auth/register - (Registro sin cambios)
-router.post('/register', async (req, res) => {
+router.get('/users/:userId', async (req, res) => {
+    try {
+        const userId = req.params.userId; 
+        
+        const profile = await perfilService.getProfile(userId); 
+        res.json(profile);
+    } catch (error) {
+        res.status(error.status || 500).json({ message: error.message || "Error al cargar perfil." });
+    }
+});
+
+router.post('/register', express.json(), async (req, res) => {
     try {
         const { email, password, name, role } = req.body;
         const user = await perfilService.registerUser(email, password, name, role);
@@ -17,35 +34,26 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// [POST] /auth/login - Iniciar sesión y obtener ID/ROL
-router.post('/login', async (req, res) => {
+router.post('/login', express.json(), async (req, res) => {
     try {
         const { email, password } = req.body;
-        // El login ahora devuelve el ID y ROL
         const authData = await authService.login(email, password); 
         
-        // Devolvemos los datos del usuario logueado. (Esto es lo que reemplaza al token)
         res.json({ message: "Login exitoso", user: authData }); 
     } catch (error) {
         res.status(error.status || 500).json({ message: error.message || "Error al iniciar sesión." });
     }
 });
 
-// --- RUTA PRIVADA MODIFICADA (Temporalmente Insegura) ---
-
-// [GET] /auth/perfil - REQUIERE que se envíe el ID del usuario en la URL o Body para la prueba
-router.get('/perfil/:userId', async (req, res) => {
+router.get('/report', async (req, res) => {
     try {
-        // En un escenario real, el ID vendría de la sesión (JWT). 
-        // Aquí, lo tomamos del parámetro de la URL para poder probar la ruta.
-        const userId = req.params.userId; 
-        
-        const profile = await perfilService.getProfile(userId); 
-        res.json(profile);
+        const report = await authService.generateReport();
+        res.json(report);
     } catch (error) {
-        res.status(error.status || 500).json({ message: error.message || "Error al cargar perfil." });
+        res.status(error.status || 500).json({ message: error.message || "Error al generar reporte." });
     }
 });
+
 
 module.exports = router;
 // este se encarga de ontener el perfil del usuario y de registrar nuevos usuarios y de iniciar sesion
