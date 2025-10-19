@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const jobService = require('./job.service'); // este archivo manejará la lógica real (si no existe, lo creamos abajo)
+const jobService = require('./jobs.service'); // este archivo manejará la lógica real (si no existe, lo creamos abajo)
 
 // ---------------------------------------------------------
 // 1️⃣ Listar todos los trabajos
