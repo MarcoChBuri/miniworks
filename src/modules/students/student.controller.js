@@ -1,16 +1,10 @@
 const express = require('express');
-const { route } = require('../auth/auth.controller');
 const router = express.Router();
 
-// Importa tus servicios (ajusta las rutas según tu estructura real)
-const perfilService = require('../perfil.service');
+const perfilService = require('../auth/perfil.service');
 const studentService = require('./student.service');
 const jobService = require('../jobs/job.service');
 
-// ---------------------------------------------------------
-// Registro de estudiante
-// POST /api/students/register
-// ---------------------------------------------------------
 router.post('/register', express.json(), async (req, res) => {
     try {
         const { email, password, name } = req.body;
@@ -21,10 +15,7 @@ router.post('/register', express.json(), async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------
-// Ver historial del estudiante
-// GET /api/students/:userId/history
-// ---------------------------------------------------------
+
 router.get('/:userId/history', async (req, res) => {
     try {
         const userId = req.params.userId;
@@ -35,10 +26,6 @@ router.get('/:userId/history', async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------
-// Ver reseñas del estudiante
-// GET /api/students/:userId/reviews
-// ---------------------------------------------------------
 router.get('/:userId/reviews', async (req, res) => {    
     try {
         const userId = req.params.userId;
@@ -49,10 +36,6 @@ router.get('/:userId/reviews', async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------
-// 🔹 Ver trabajos disponibles
-// GET /api/students/jobs/available
-// ---------------------------------------------------------
 router.get('/jobs/available', async (req, res) => {
     try {
         const jobs = await jobService.getAvailableJobs();
@@ -62,14 +45,11 @@ router.get('/jobs/available', async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------
-// 🔹 Postular a un trabajo
-// POST /api/students/jobs/:id/apply
-// ---------------------------------------------------------
+
 router.post('/jobs/:id/apply', async (req, res) => {
     try {
         const { id } = req.params;
-        const { studentId } = req.body; // puede venir del body o del token JWT
+        const { studentId } = req.body;
         await jobService.applyToJob(studentId, id);
         res.status(201).json({ message: "Postulación enviada exitosamente." });
     } catch (error) {
@@ -78,5 +58,3 @@ router.post('/jobs/:id/apply', async (req, res) => {
 });
 
 module.exports = router;
-
-

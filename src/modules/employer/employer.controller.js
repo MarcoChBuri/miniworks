@@ -2,12 +2,11 @@ const express = require('express');
 const router = express.Router();
 
 // Importar los servicios (ajusta rutas según tu proyecto)
-const perfilService = require('../perfil.service');
-const jobService = require('../jobs/job.service');
+const perfilService = require('../auth/perfil.service');
+const jobService = require('../jobs/jobs.service');
 const employerService = require('./employer.service'); // si aún no existe, lo creamos después
 
-// Registro de empleador
-// POST /api/employers/register
+
 router.post('/register', express.json(), async (req, res) => {
     try {
         const { nombre, correo, password } = req.body;
@@ -18,8 +17,7 @@ router.post('/register', express.json(), async (req, res) => {
     }
 });
 
-// Publicar nuevo trabajo
-// POST /api/employers/public/jobs
+
 router.post('/public/jobs', async (req, res) => {
     try {
         const jobData = req.body;
@@ -30,8 +28,7 @@ router.post('/public/jobs', async (req, res) => {
     }
 });
 
-// Ver postulaciones recibidas
-// GET /api/employers/:id/applications
+
 router.get('/:id/applications', async (req, res) => {
     try {
         const employerId = req.params.id;
@@ -42,8 +39,6 @@ router.get('/:id/applications', async (req, res) => {
     }
 });
 
-// Aceptar postulante
-// PUT /api/employers/applications/:id/accept
 router.put('/applications/:id/accept', async (req, res) => {
     try {
         const applicationId = req.params.id;
@@ -54,8 +49,7 @@ router.put('/applications/:id/accept', async (req, res) => {
     }
 });
 
-// Dejar reseña al estudiante
-// POST /api/employers/students/:id/review
+
 router.post('/students/:id/review', async (req, res) => {
     try {
         const { id } = req.params; // id del estudiante
