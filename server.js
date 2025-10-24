@@ -12,7 +12,7 @@ connectDB();
 
 
 // Monta las rutas del módulo de autenticación bajo el prefijo /api/students
-app.use('/api/students', authRoutes);
+app.use('/api/admin', authRoutes);
 //puedes agregar mas rutas de otros modulos si quieres probarlos
 
 const PORT = 3000;
