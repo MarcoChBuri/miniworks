@@ -1,5 +1,8 @@
 const express = require('express');
 const swaggerUi = require('swagger-ui-express');
+const cors = require('cors');
+const app = express();
+const authRoutes = require('./src/modules/auth/auth.controller'); // Importa tu router
 const connectDB = require('./src/config/database');
 
 const authRoutes = require('./src/modules/auth/auth.controller');
