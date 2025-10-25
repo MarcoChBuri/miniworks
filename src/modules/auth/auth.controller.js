@@ -11,7 +11,7 @@ router.get('/users', protect, async (req, res) => {
   } catch (error) {
     res.status(error.status || 500).json({ message: error.message || "Error al cargar usuarios." });
   }
-});como 
+}); 
 
 router.get('/users/:userId', protect, async (req, res) => {
   try {
