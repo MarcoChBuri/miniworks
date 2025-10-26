@@ -14,7 +14,8 @@ class AuthService {
         return {     id: user.id,
                     name: user.name,
                     email: user.email,
-                    rol: user.rol }; 
+                    rol: user.rol
+                     }; 
     }
     
     // NOTA: ELIMINAMOS EL MÉTODO verifyToken()

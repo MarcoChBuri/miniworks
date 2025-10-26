@@ -36,6 +36,10 @@ class UserRepository {
         // Mongoose se encarga de la validación, la asignación del _id y la comunicación.
         return newUser.save();
     }
+    async findByCedula(cedula) {
+    return User.findOne({ cedula: cedula }).lean();
+}
+
 }
 
 module.exports = new UserRepository();

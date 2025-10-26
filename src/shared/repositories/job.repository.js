@@ -1,4 +1,4 @@
-const Job = require('./job.model');
+const Job = require('../models/job.model');
 
 class JobRepository {
 
@@ -45,6 +45,18 @@ class JobRepository {
             { $push: { applicants: studentId } },
             { new: true } // Devuelve el documento actualizado
         );
+    }
+    async search(query) {
+        // Búsqueda simple usando expresiones regulares para coincidencia parcial e insensible a mayúsculas.
+        const regex = new RegExp(query, 'i');
+        return Job.find({
+            status: 'abierto',
+            $or: [
+                { title: regex },
+                { description: regex },
+                { company: regex }
+            ]
+        }).lean();
     }
 }
 

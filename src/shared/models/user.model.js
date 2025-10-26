@@ -14,6 +14,12 @@ const userSchema = new mongoose.Schema({
         lowercase: true,
         trim: true
     },
+    cedula: {
+        type: String,
+        required: true,
+        unique: true,
+        trim: true
+    },
     passwordHash: {
         type: String,
         required: true

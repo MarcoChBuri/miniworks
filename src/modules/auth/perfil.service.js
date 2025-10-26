@@ -3,7 +3,7 @@ const universityValidator = require('../../external/university.validator');
 const bcrypt = require('bcrypt');
 
 class PerfilService {
-    async registerUser(email, password, name, role) {
+    async registerUser(email, password, name, role, cedula) {
         if (await userRepository.findByEmail(email)) {
             throw { status: 409, message: "El email ya está registrado." };
         }
@@ -20,7 +20,7 @@ class PerfilService {
         // Hashear contraseña antes de guardar
         const passwordHash = await bcrypt.hash(password, 10); // Usar salt=10
 
-        const newUser = { email, passwordHash, name, role, isValidated };
+        const newUser = { email, passwordHash, name, role, isValidated ,cedula };
         return userRepository.save(newUser);
     }
     

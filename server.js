@@ -8,7 +8,7 @@ const employerRoutes = require('./src/modules/employer/employer.controller');
 
 const swaggerDocument = require('./src/docs/swagger');
 const app = express();
-
+app.use(express.json()); 
 
 // Conectar a la base de datos
 connectDB();    
@@ -18,7 +18,7 @@ app.use('/api/admin/auth', authRoutes);
 //trabajos
 app.use('/api/jobs', jobsRoutes);
 //Empleadores
-app.use('/api/v1/employers', employerRoutes);
+app.use('/api/employers', employerRoutes);
 
 // Configuración de Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
