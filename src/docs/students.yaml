@@ -1,0 +1,172 @@
+
+tags:
+  - name: Students
+    description: Endpoints para gestión y acciones de estudiantes en MiniWorks
+
+paths:
+  /students/register:
+    post:
+      summary: Registro de un nuevo estudiante
+      tags:
+        - Students
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+                name:
+                  type: string
+      responses:
+        '201':
+          description: Usuario registrado con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  id:
+                    type: string
+        '500':
+          description: Error al registrar
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /students/{userId}/history:
+    get:
+      summary: Ver historial de trabajos del estudiante
+      tags:
+        - Students
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+          description: ID del estudiante
+      responses:
+        '200':
+          description: Historial obtenido correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '500':
+          description: Error al cargar historial
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /students/{userId}/reviews:
+    get:
+      summary: Ver reseñas del estudiante
+      tags:
+        - Students
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+          description: ID del estudiante
+      responses:
+        '200':
+          description: Reseñas obtenidas correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '500':
+          description: Error al cargar reseñas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /students/jobs/available:
+    get:
+      summary: Ver trabajos disponibles para estudiantes
+      tags:
+        - Students
+      responses:
+        '200':
+          description: Lista de trabajos disponibles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '500':
+          description: Error al obtener trabajos disponibles
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /students/jobs/{id}/apply:
+    post:
+      summary: Postular a un trabajo
+      tags:
+        - Students
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del trabajo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                studentId:
+                  type: string
+      responses:
+        '201':
+          description: Postulación enviada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Error al postular
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string

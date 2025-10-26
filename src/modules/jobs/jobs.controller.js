@@ -1,12 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const jobService = require('./jobs.service'); // este archivo manejará la lógica real (si no existe, lo creamos abajo)
+const jobService = require('./jobs.service'); // lógica del módulo
 
-// ---------------------------------------------------------
-// 1️⃣ Listar todos los trabajos
-// Ruta: GET /api/jobs/all
-// Descripción: Obtiene todos los trabajos publicados
-// ---------------------------------------------------------
+
 router.get('/all', async (req, res) => {
     try {
         const jobs = await jobService.getAllJobs();
@@ -16,11 +12,6 @@ router.get('/all', async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------
-// 2️⃣ Buscar por palabra clave
-// Ruta: GET /api/jobs/search?query=limpieza
-// Descripción: Busca trabajos relacionados por palabra clave
-// ---------------------------------------------------------
 router.get('/search', async (req, res) => {
     try {
         const { query } = req.query;
@@ -36,11 +27,6 @@ router.get('/search', async (req, res) => {
     }
 });
 
-// ---------------------------------------------------------
-// 3️⃣ Ver detalle de un trabajo específico
-// Ruta: GET /api/jobs/:id
-// Descripción: Muestra la información de un trabajo específico
-// ---------------------------------------------------------
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
