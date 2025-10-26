@@ -1,0 +1,10 @@
+_format_version: "3.0"
+_transform: true
+
+services:
+  - name: miniworks-service
+    url: http://miniworks:3000
+    routes:
+      - name: miniworks-route
+        paths:
+          - /miniworks

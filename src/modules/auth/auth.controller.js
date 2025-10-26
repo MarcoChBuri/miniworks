@@ -29,10 +29,10 @@ const fetch = require('node-fetch');
 
 router.post('/register', express.json(), async (req, res) => {
   try {
-    const { email, name, university, password, role } = req.body;
+    const { email, name, password, role } = req.body;
 
     // Validar estatus en microservicio
-    const isValid = await universityValidator.validateStatus(email, university);
+    const isValid = await universityValidator.validateStatus(email);
 
     if (!isValid) {
       return res.status(403).json({ message: "Acceso denegado: estatus de matrícula no activo." });
