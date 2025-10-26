@@ -3,7 +3,7 @@ const fetch = require('node-fetch');
 class UniversityValidator {
     async validateStatus(email, university) {
         console.log(`[EXT] Consultando estatus de matrícula para: ${email}`);
-        const url = 'http://127.0.0.1:8000/students/validate';
+        const url = 'http://validador-universidad:9000/students/validate';
 
         try {
             const response = await fetch(url, {
