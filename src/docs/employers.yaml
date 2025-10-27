@@ -1,0 +1,124 @@
+
+tags:
+  - name: Employers
+    description: Endpoints relacionados con empleadores y publicación de trabajos.
+
+paths:
+  /api/v1/employers/register:
+    post:
+      summary: Registra un nuevo empleador
+      tags: [Employers]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: Juan Pérez
+                correo:
+                  type: string
+                  example: juan@empresa.com
+                password:
+                  type: string
+                  example: "123456"
+      responses:
+        201:
+          description: Empleador registrado con éxito
+        500:
+          description: Error al registrar empleador
+
+  /api/v1/employers/public/jobs:
+    post:
+      summary: Publica un nuevo trabajo
+      tags: [Employers]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                titulo:
+                  type: string
+                  example: Desarrollador Backend
+                descripcion:
+                  type: string
+                  example: Trabajo remoto para mantenimiento de API Node.js
+                salario:
+                  type: number
+                  example: 800
+                ubicacion:
+                  type: string
+                  example: Quito
+      responses:
+        201:
+          description: Trabajo publicado exitosamente
+        500:
+          description: Error al publicar trabajo
+
+  /api/v1/employers/{id}/applications:
+    get:
+      summary: Obtiene las postulaciones recibidas por un empleador
+      tags: [Employers]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del empleador
+      responses:
+        200:
+          description: Lista de postulaciones obtenida correctamente
+        500:
+          description: Error al obtener postulaciones
+
+  /api/v1/employers/applications/{id}/accept:
+    put:
+      summary: Acepta un postulante
+      tags: [Employers]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID de la postulación
+      responses:
+        200:
+          description: Postulante aceptado exitosamente
+        500:
+          description: Error al aceptar postulante
+
+  /api/v1/employers/students/{id}/review:
+    post:
+      summary: Crea una reseña para un estudiante
+      tags: [Employers]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del estudiante
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                calificacion:
+                  type: number
+                  example: 5
+                comentario:
+                  type: string
+                  example: "Excelente desempeño en el proyecto."
+      responses:
+        201:
+          description: Reseña creada exitosamente
+        500:
+          description: Error al dejar reseña

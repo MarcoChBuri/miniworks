@@ -1,0 +1,135 @@
+
+tags:
+  - name: Jobs
+    description: Endpoints para la gestión de trabajos en MiniWorks
+
+paths:
+  /jobs/all:
+    get:
+      summary: Obtiene todos los trabajos publicados
+      tags:
+        - Jobs
+      responses:
+        '200':
+          description: Lista de trabajos cargada correctamente
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    company:
+                      type: string
+                    location:
+                      type: string
+                    createdAt:
+                      type: string
+                      format: date-time
+        '500':
+          description: Error al cargar trabajos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /jobs/search:
+    get:
+      summary: Busca trabajos por palabra clave
+      tags:
+        - Jobs
+      parameters:
+        - in: query
+          name: query
+          required: true
+          schema:
+            type: string
+          description: Palabra clave para buscar trabajos
+      responses:
+        '200':
+          description: Resultados encontrados
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '400':
+          description: Faltó la palabra clave
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Error al buscar trabajos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /jobs/{id}:
+    get:
+      summary: Obtiene los detalles de un trabajo específico
+      tags:
+        - Jobs
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del trabajo
+      responses:
+        '200':
+          description: Detalles del trabajo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  title:
+                    type: string
+                  description:
+                    type: string
+                  company:
+                    type: string
+                  location:
+                    type: string
+                  createdAt:
+                    type: string
+                    format: date-time
+        '404':
+          description: Trabajo no encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Error del servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string

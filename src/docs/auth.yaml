@@ -1,0 +1,67 @@
+
+tags:
+  - name: Auth
+    description: Endpoints de autenticación y usuarios
+
+paths:
+  /api/admin/auth/register:
+    post:
+      summary: Registra un nuevo usuario
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: usuario@miniworks.com
+                password:
+                  type: string
+                  example: "12345678"
+                name:
+                  type: string
+                  example: Juan Pérez
+                role:
+                  type: string
+                  example: ESTUDIANTE
+      responses:
+        201:
+          description: Usuario registrado con éxito
+        500:
+          description: Error al registrar
+
+  /api/admin/auth/login:
+    post:
+      summary: Inicia sesión de usuario
+      tags: [Auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: usuario@miniworks.com
+                password:
+                  type: string
+                  example: "12345678"
+      responses:
+        200:
+          description: Login exitoso
+        401:
+          description: Credenciales inválidas
+
+  /api/admin/auth/report:
+    get:
+      summary: Genera un reporte de usuarios
+      tags: [Auth]
+      responses:
+        200:
+          description: Reporte generado correctamente
+        500:
+          description: Error al generar reporte

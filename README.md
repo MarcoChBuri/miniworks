@@ -1,5 +1,8 @@
 # 📌 Mini Empleos UNL
 
+Sawgger:
+https://github.com/MarcoChBuri/miniworks/tree/feature/endpoints/src/docs 
+
 Plataforma de **mini empleos** en la cual:
 - Los **empleados** son estudiantes de la Universidad Nacional de Loja (UNL).  
 - Los **empleadores** son personas o entidades externas que ofrecen **trabajos simples, cortos y de máximo 2 días**, con pago por hora o por día.  
