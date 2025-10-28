@@ -13,6 +13,7 @@ router.get('/users', protect, async (req, res) => {
   }
 }); 
 
+
 router.get('/users/:userId', protect, async (req, res) => {
   try {
     const userId = req.params.userId;
