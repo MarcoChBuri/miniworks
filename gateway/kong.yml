@@ -1,10 +1,16 @@
 _format_version: "3.0"
-_transform: true
 
 services:
-  - name: miniworks-service
+  - name: miniworks
     url: http://miniworks:3000
     routes:
       - name: miniworks-route
         paths:
           - /miniworks
+
+  - name: validadoruniversidad
+    url: http://validadoruniversidad:9000
+    routes:
+      - name: validadoruniversidad-route
+        paths:
+          - /validadoruniversidad
