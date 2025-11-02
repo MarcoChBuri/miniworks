@@ -41,4 +41,3 @@ class UserRepository {
 module.exports = new UserRepository();
 /// este es el q se encarga de comunicarse con el usaermoel y la db asiq q debe tener los mismo parametros q el user model
 // Nota: Este repositorio asume que la conexión a MongoDB ya está establecida en otra parte de la aplicación.
-// Asegúrate de manejar errores y excepciones en un entorno de producción real.
