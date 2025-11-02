@@ -31,13 +31,12 @@ router.post('/register', express.json(), async (req, res) => {
   try {
     const { email, name, password, role ,cedula} = req.body;
 
-    // Validar estatus en microservicio
-    if (role === 'ESTUDIANTE') {
-    const isValid = await universityValidator.validateStatus(email);
-
-        if (!isValid) {
-            return res.status(403).json({ message: "Acceso denegado: estatus de matrícula no activo." });
-        }
+    const roleToUse = role || 'ESTUDIANTE';
+    if (roleToUse === 'ESTUDIANTE') {
+      const isValid = await universityValidator.validateStatus(email);
+      if (!isValid) {
+        return res.status(403).json({ message: "Acceso denegado: estatus de matrícula no activo." });
+      }
     }
 
     const user = await perfilService.registerUser(email, password, name, role, cedula);
