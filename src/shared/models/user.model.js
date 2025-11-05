@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
     role: {
         type: String,
         required: true,
-        enum: ['ESTUDIANTE', 'PUBLICADOR DE TRABAJO', 'ADMINISTRADOR'],
+        enum: ['ESTUDIANTE', 'PUBLICADOR DE TRABAJO', 'EMPRESA', 'ADMINISTRADOR'],
         default: 'ESTUDIANTE'
     },
     isValidated: { 

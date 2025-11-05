@@ -1,35 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const employerService = require('./employer.service');
 
-// Importar los servicios (ajusta rutas según tu proyecto)
-const perfilService = require('../auth/perfil.service');
-const jobService = require('../jobs/jobs.service');
-const employerService = require('./employer.service'); // si aún no existe, lo creamos después
-
-
-router.post('/register', express.json(), async (req, res) => {
-    try {
-        const { nombre, correo, password } = req.body;
-        const newEmployer = await perfilService.registerEmployer(nombre, correo, password, 'EMPLEADOR');
-        res.status(201).json({ message: "Empleador registrado con éxito.", id: newEmployer.id });
-    } catch (error) {
-        res.status(error.status || 500).json({ message: error.message || "Error al registrar empleador." });
-    }
-});
-
-
-router.post('/public/jobs', async (req, res) => {
-    try {
-        const jobData = req.body;
-        const newJob = await jobService.createJob(jobData);
-        res.status(201).json(newJob);
-    } catch (error) {
-        res.status(error.status || 500).json({ message: error.message || "Error al publicar trabajo." });
-    }
-});
-
-
-router.get('/:id/applications', async (req, res) => {
+router.get('/applications/:id', async (req, res) => {
     try {
         const employerId = req.params.id;
         const applications = await employerService.getApplicationsByEmployer(employerId);
@@ -49,16 +22,47 @@ router.put('/applications/:id/accept', async (req, res) => {
     }
 });
 
-
+// Dejar reseña a un estudiante
 router.post('/students/:id/review', async (req, res) => {
     try {
-        const { id } = req.params; // id del estudiante
+        const studentId = req.params.id;
         const { calificacion, comentario } = req.body;
 
-        const review = await employerService.createReviewForStudent(id, calificacion, comentario);
+        const review = await employerService.createReviewForStudent(studentId, calificacion, comentario);
         res.status(201).json({ message: "Reseña creada exitosamente.", review });
     } catch (error) {
         res.status(error.status || 500).json({ message: error.message || "Error al dejar reseña." });
+    }
+});
+
+router.get('/reviews/:id', async (req, res) => {
+    try {
+        const employerId = req.params.id;
+        const reviews = await employerService.getReviewsByEmployer(employerId);
+        res.status(200).json(reviews);
+    } catch (error) {
+        res.status(error.status || 500).json({ message: error.message || "Error al obtener las reseñas del empleador." });
+    }
+});
+
+router.get('/jobs/:id', async (req, res) => {
+    try {
+        const employerId = req.params.id;
+        const jobs = await employerService.getJobsByEmployer(employerId);
+        res.status(200).json(jobs);
+    } catch (error) {
+        res.status(error.status || 500).json({ message: error.message || "Error al obtener trabajos." });
+    }
+});
+
+router.put('/profile/:id', async (req, res) => {
+    try {
+        const employerId = req.params.id;
+        const updatedData = req.body;
+        const updatedProfile = await employerService.updateEmployer(employerId, updatedData);
+        res.status(200).json({ message: "Perfil actualizado exitosamente.", data: updatedProfile });
+    } catch (error) {
+        res.status(error.status || 500).json({ message: error.message || "Error al actualizar perfil." });
     }
 });
 

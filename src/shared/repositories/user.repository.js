@@ -40,6 +40,10 @@ class UserRepository {
     return User.findOne({ cedula: cedula }).lean();
 }
 
+    async findAll() {
+        return User.find({}).lean();
+    }
+
 }
 
 module.exports = new UserRepository();

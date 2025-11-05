@@ -1,7 +1,6 @@
-
 tags:
   - name: Employers
-    description: Endpoints relacionados con empleadores y publicación de trabajos.
+    description: Endpoints relacionados con empleadores, gestión de postulaciones, reseñas y publicación de trabajos.
 
 paths:
   /api/v1/employers/register:
@@ -122,3 +121,73 @@ paths:
           description: Reseña creada exitosamente
         500:
           description: Error al dejar reseña
+
+  /api/v1/employers/reviews/{id}:
+    get:
+      summary: Obtiene todas las reseñas de un empleador
+      tags: [Employers]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del empleador
+      responses:
+        200:
+          description: Reseñas obtenidas correctamente
+        500:
+          description: Error al obtener reseñas
+
+  /api/v1/employers/jobs/{id}:
+    get:
+      summary: Obtiene los trabajos publicados por un empleador
+      tags: [Employers]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del empleador
+      responses:
+        200:
+          description: Lista de trabajos publicada correctamente
+        500:
+          description: Error al obtener trabajos
+
+  /api/v1/employers/profile/{id}:
+    put:
+      summary: Actualiza el perfil del empleador
+      tags: [Employers]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: ID del empleador
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                nombre:
+                  type: string
+                  example: Juan Pérez
+                empresa:
+                  type: string
+                  example: "Tech Solutions S.A."
+                ubicacion:
+                  type: string
+                  example: "Quito"
+                descripcion:
+                  type: string
+                  example: "Empresa dedicada al desarrollo de software."
+      responses:
+        200:
+          description: Perfil actualizado exitosamente
+        500:
+          description: Error al actualizar perfil
