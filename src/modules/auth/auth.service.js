@@ -12,18 +12,18 @@ class AuthService {
     }
 
     const payload = {
-      id: user.id,
+      id: user._id,        
       name: user.name,
-      rol: user.rol
+      role: user.role
     };
 
     const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     return { 
-      id: user.id,
+      id: user._id,
       name: user.name,
       email: user.email,
-      rol: user.rol,
+      role: user.role,
       token 
     };
   }

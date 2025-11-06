@@ -1,69 +1,56 @@
-const jobs = []; 
-const applications = [
-    { id: "a1", jobId: "1", employerId: "e1", studentId: "s1", status: "PENDING", appliedAt: "2025-10-12" }
-];
-const reviews = [
-    { id: "r1", studentId: "s1", calificacion: 5, comentario: "Muy responsable", createdAt: "2025-10-20" }
-];
+const userRepository = require('../../shared/repositories/user.repository');
 
-// Devuelve postulaciones para un empleador (por employerId)
-async function getApplicationsByEmployer(employerId) {
-    if (!employerId) return Promise.resolve([]);
-    const results = applications.filter(a => String(a.employerId) === String(employerId));
-    return Promise.resolve(results);
-}
+class EmployerService {
 
-// Acepta un postulante (cambia status a ACCEPTED)
-async function acceptApplicant(applicationId) {
-    if (!applicationId) return Promise.resolve(null);
-    const idx = applications.findIndex(a => String(a.id) === String(applicationId));
-    if (idx === -1) return Promise.resolve(null);
-
-    applications[idx].status = "ACCEPTED";
-    applications[idx].decisionAt = new Date().toISOString();
-    return Promise.resolve(applications[idx]);
-}
-
-// Crear reseña para estudiante
-async function createReviewForStudent(studentId, calificacion, comentario) {
-    if (!studentId) return Promise.resolve(null);
-    const score = Number(calificacion);
-    if (Number.isNaN(score) || score < 1 || score > 5) {
-        const err = new Error("La calificación debe ser un número entre 1 y 5.");
-        err.status = 400;
-        throw err;
+    async getApplicationsByEmployer(employerId) {
+        const employer = await userRepository.findById(employerId);
+        if (!employer) throw { status: 404, message: "Empleador no encontrado." };
+        return employer.applications || [];
     }
 
-    const review = {
-        id: Date.now().toString(),
-        studentId: String(studentId),
-        calificacion: score,
-        comentario: comentario || "",
-        createdAt: new Date().toISOString()
-    };
+    async acceptApplicant(applicationId) {
+        const employer = await userRepository.findOne({ 'applications._id': applicationId });
+        if (!employer) throw { status: 404, message: "Aplicación no encontrada." };
 
-    reviews.push(review);
-    return Promise.resolve(review);
+        const application = employer.applications.id(applicationId);
+        application.status = 'accepted';
+        await employer.save();
+
+        return application;
+    }
+
+    async createReviewForStudent(studentId, calificacion, comentario) {
+        const student = await userRepository.findById(studentId);
+        if (!student) throw { status: 404, message: "Estudiante no encontrado." };
+
+        const review = { calificacion, comentario, date: new Date() };
+        student.reviews = student.reviews || [];
+        student.reviews.push(review);
+
+        return review;
+    }
+
+    async getReviewsByEmployer(employerId) {
+        const employer = await userRepository.findById(employerId);
+        if (!employer) throw { status: 404, message: "Empleador no encontrado." };
+        return employer.reviews || [];
+    }
+
+    async getJobsByEmployer(employerId) {
+        const employer = await userRepository.findById(employerId);
+        if (!employer) throw { status: 404, message: "Empleador no encontrado." };
+        return employer.jobs || [];
+    }
+
+    async updateEmployer(employerId, updatedData) {
+        const employer = await userRepository.findByIdAndUpdate(
+            employerId,
+            { $set: updatedData },
+            { new: true, runValidators: true }
+        );
+        if (!employer) throw { status: 404, message: "Empleador no encontrado." };
+        return employer;
+    }
 }
 
-// Helpers para pruebas: crear/postular
-async function createApplication({ jobId, employerId, studentId }) {
-    const app = {
-        id: Date.now().toString(),
-        jobId: String(jobId),
-        employerId: String(employerId),
-        studentId: String(studentId),
-        status: "PENDING",
-        appliedAt: new Date().toISOString()
-    };
-    applications.push(app);
-    return Promise.resolve(app);
-}
-
-module.exports = {
-    getApplicationsByEmployer,
-    acceptApplicant,
-    createReviewForStudent,
-    // helpers
-    createApplication
-};
+module.exports = new EmployerService();

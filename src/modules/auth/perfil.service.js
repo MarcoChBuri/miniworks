@@ -33,11 +33,9 @@ class PerfilService {
         return profile;
     }
     async getAllUsers() {
-        // Aquí podríamos implementar un método en userRepository para obtener todos los usuarios.
-        // Por simplicidad, asumimos que userRepository tiene un método findAll().
+        
         const users = await userRepository.findAll();
         
-        // Limpiar datos sensibles antes de enviar
         return users.map(({ passwordHash, ...user }) => user);
     }
 }

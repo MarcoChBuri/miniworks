@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
-// Este es el plano para la creacion de  clases como en el diagrama de clases.
+const reviewSchema = new mongoose.Schema({
+    calificacion: { type: Number, required: true, min: 0, max: 5 },
+    comentario: { type: String, required: true, trim: true },
+    date: { type: Date, default: Date.now }
+});
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
