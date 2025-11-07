@@ -7,7 +7,7 @@ const app = express();
 const authRoutes = require('./src/modules/auth/auth.controller');
 const jobsRoutes = require('./src/modules/jobs/jobs.controller');
 const employerRoutes = require('./src/modules/employer/employer.controller');
-
+const studentRoutes = require('./src/modules/students/student.controller');
 // Configuración de base de datos y documentación
 const connectDB = require('./src/config/database');
 const swaggerDocument = require('./src/docs/swagger');
@@ -22,6 +22,7 @@ connectDB();
 app.use('/api/admin/auth', authRoutes);
 app.use('/api/jobs', jobsRoutes);
 app.use('/api/employers', employerRoutes);
+app.use('/api/students', studentRoutes);
 
 // Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

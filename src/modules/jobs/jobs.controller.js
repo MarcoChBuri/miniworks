@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const jobService = require('./jobs.service'); // lógica del módulo
+const { protect } = require('../../middlewares/auth.middleware');
+
 router.use(express.json());
 
 router.get('/all', async (req, res) => {
@@ -42,22 +44,32 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.post('/:id/apply', async (req, res) => {
+router.post('/:id/apply', protect, async (req, res) => {
     try {
-        const { id } = req.params;
-        const { studentId } = req.body;
-        const updatedJob = await jobService.applyToJob(id, studentId);
-        res.status(200).json(updatedJob);
+        if (req.user.role !== 'ESTUDIANTE') {
+            return res.status(403).json({ message: "Solo estudiantes pueden postularse a trabajos." });
+        }
+
+        const { id } = req.params; // job ID
+        const studentId = req.user.id; // tomamos el ID del token
+        const updatedJob = await jobService.applyToJob(studentId, id);
+        res.status(200).json({ message: "Postulación enviada exitosamente.", job: updatedJob });
     } catch (error) {
         res.status(error.status || 500).json({ message: error.message || "Error al postular al trabajo." });
     }
 });
 
-router.post('/create', async (req, res) => {
+router.post('/create', protect, async (req, res) => {
     try {
-        const jobData = req.body;
-        const newJob = await jobService.createJob(jobData);
-        res.status(201).json(newJob);
+        if (req.user.role !== 'PUBLICADOR DE TRABAJO') {
+            return res.status(403).json({ message: "Solo empleadores pueden crear trabajos." });
+        }
+
+        const { title, description, company } = req.body;
+        const createdBy = req.user.id;
+
+        const newJob = await jobService.createJob(title, description, company, createdBy);
+        res.status(201).json({ message: "Trabajo creado exitosamente.", job: newJob });
     } catch (error) {
         res.status(error.status || 500).json({ message: error.message || "Error al crear trabajo." });
     }

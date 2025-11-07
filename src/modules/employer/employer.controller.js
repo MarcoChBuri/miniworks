@@ -3,24 +3,35 @@ const router = express.Router();
 const employerService = require('./employer.service');
 const { protect } = require('../../middlewares/auth.middleware');
 
-// Obtener aplicaciones de un empleador
-router.get('/applications/:id', protect, async (req, res) => {
-    try {
-        const employerId = req.params.id;
+// router.get('/applications/all', protect, async (req, res) => {
+//     try {
+//         if (req.user.role !== 'PUBLICADOR DE TRABAJO' && req.user.role !== 'ADMINISTRADOR') {
+//             return res.status(403).json({ message: "Acceso denegado." });
+//         }
 
-        // Validar que el usuario sea el mismo empleador o administrador
+//         const applications = await employerService.getAllApplications();
+//         res.status(200).json(applications);
+//     } catch (error) {
+//         res.status(error.status || 500).json({ message: error.message || "Error al obtener postulaciones." });
+//     }
+// });
+
+router.get('/jobs/:id/applications', protect, async (req, res) => {
+    try {
+        const employerId = req.user.id; 
+        const jobId = req.params.id; 
         if (req.user.role !== 'PUBLICADOR DE TRABAJO' && req.user.role !== 'ADMINISTRADOR') {
-            return res.status(403).json({ message: "Acceso denegado." });
+            return res.status(403).json({ message: "Acceso denegado. Solo empleadores pueden ver postulaciones." });
         }
 
-        const applications = await employerService.getApplicationsByEmployer(employerId);
+        const applications = await employerService.getApplicationsByJob(employerId, jobId);
         res.status(200).json(applications);
     } catch (error) {
         res.status(error.status || 500).json({ message: error.message || "Error al obtener postulaciones." });
     }
 });
 
-// Aceptar un postulante
+
 router.put('/applications/:id/accept', protect, async (req, res) => {
     try {
         if (req.user.role !== 'PUBLICADOR DE TRABAJO') {
@@ -35,8 +46,7 @@ router.put('/applications/:id/accept', protect, async (req, res) => {
     }
 });
 
-// Crear reseña para un estudiante
-router.post('/students/:id/review', protect, async (req, res) => {
+router.post('/reviews/:id/students/send', protect, async (req, res) => {
     try {
         if (req.user.role !== 'PUBLICADOR DE TRABAJO') {
             return res.status(403).json({ message: "Solo empleadores pueden dejar reseñas." });
@@ -52,18 +62,16 @@ router.post('/students/:id/review', protect, async (req, res) => {
     }
 });
 
-// Obtener reseñas de un empleador
-router.get('/reviews/:id', protect, async (req, res) => {
-    try {
-        const employerId = req.params.id;
-        const reviews = await employerService.getReviewsByEmployer(employerId);
-        res.status(200).json(reviews);
-    } catch (error) {
-        res.status(error.status || 500).json({ message: error.message || "Error al obtener reseñas del empleador." });
-    }
-});
+// router.get('reviews/:id', protect, async (req, res) => {
+//     try {
+//         const employerId = req.params.id;
+//         const reviews = await employerService.getReviewsByEmployer(employerId);
+//         res.status(200).json(reviews);
+//     } catch (error) {
+//         res.status(error.status || 500).json({ message: error.message || "Error al obtener reseñas del empleador." });
+//     }
+// });
 
-// Obtener trabajos de un empleador
 router.get('/jobs/:id', protect, async (req, res) => {
     try {
         const employerId = req.params.id;
@@ -74,21 +82,20 @@ router.get('/jobs/:id', protect, async (req, res) => {
     }
 });
 
-// Actualizar perfil del empleador
-router.put('/profile/:id', protect, async (req, res) => {
-    try {
-        if (req.user.role !== 'PUBLICADOR DE TRABAJO') {
-            return res.status(403).json({ message: "Solo empleadores pueden actualizar su perfil." });
-        }
+// router.put('/profile/:id', protect, async (req, res) => {
+//     try {
+//         if (req.user.role !== 'PUBLICADOR DE TRABAJO') {
+//             return res.status(403).json({ message: "Solo empleadores pueden actualizar su perfil." });
+//         }
 
-        const employerId = req.params.id;
-        const updatedData = req.body;
+//         const employerId = req.params.id;
+//         const updatedData = req.body;
 
-        const updatedProfile = await employerService.updateEmployer(employerId, updatedData);
-        res.status(200).json({ message: "Perfil actualizado exitosamente.", data: updatedProfile });
-    } catch (error) {
-        res.status(error.status || 500).json({ message: error.message || "Error al actualizar perfil." });
-    }
-});
+//         const updatedProfile = await employerService.updateEmployer(employerId, updatedData);
+//         res.status(200).json({ message: "Perfil actualizado exitosamente.", data: updatedProfile });
+//     } catch (error) {
+//         res.status(error.status || 500).json({ message: error.message || "Error al actualizar perfil." });
+//     }
+// });
 
 module.exports = router;

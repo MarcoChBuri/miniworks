@@ -37,9 +37,11 @@ const userSchema = new mongoose.Schema({
     isValidated: { 
         type: Boolean,
         default: false
-    }
+    },
+    reviews: [reviewSchema]
 }, {
     timestamps: true
+    
 });
 
 const User = mongoose.model('User', userSchema);

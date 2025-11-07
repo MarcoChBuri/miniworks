@@ -8,6 +8,9 @@ const universityValidator = require('../../external/university.validator');
 
 router.get('/users', protect, async (req, res) => {
   try {
+      if (req.user.role !== 'ADMINISTRADOR') {
+            return res.status(403).json({ message: "Solo administradores pueden ver usuarios." });
+      }
     const users = await perfilService.getAllUsers();
     res.json(users);
   } catch (error) {

@@ -58,6 +58,9 @@ class JobRepository {
             ]
         }).lean();
     }
+    async getApplicantsByJobId(jobId) {
+    return Job.findById(jobId).populate('applicants', 'name email cedula').select('title applicants').lean();
+}
 }
 
 module.exports = new JobRepository();

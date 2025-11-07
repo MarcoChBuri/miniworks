@@ -1,6 +1,20 @@
 const userRepository = require('../../shared/repositories/user.repository');
-
+const jobRepository = require('../../shared/repositories/job.repository');
 class EmployerService {
+ 
+async getApplicationsByJob(employerId, jobId) {
+    const job = await jobRepository.findById(jobId);
+
+    if (!job)
+        throw { status: 404, message: "Trabajo no encontrado." };
+
+    // 🔹 No se valida el creador, solo se obtienen las postulaciones del trabajo
+    return await jobRepository.getApplicantsByJobId(jobId);
+}
+
+
+
+
 
     async getApplicationsByEmployer(employerId) {
         const employer = await userRepository.findById(employerId);
@@ -19,16 +33,14 @@ class EmployerService {
         return application;
     }
 
-    async createReviewForStudent(studentId, calificacion, comentario) {
-        const student = await userRepository.findById(studentId);
-        if (!student) throw { status: 404, message: "Estudiante no encontrado." };
+async createReviewForStudent(studentId, calificacion, comentario) {
+    const student = await userRepository.findById(studentId);
+    if (!student) throw { status: 404, message: "Estudiante no encontrado." };
+    const review = { calificacion, comentario, date: new Date() };
+    const updatedStudent = await userRepository.addReview(studentId, review);
+    return updatedStudent.reviews.at(-1);
+}
 
-        const review = { calificacion, comentario, date: new Date() };
-        student.reviews = student.reviews || [];
-        student.reviews.push(review);
-
-        return review;
-    }
 
     async getReviewsByEmployer(employerId) {
         const employer = await userRepository.findById(employerId);

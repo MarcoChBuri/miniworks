@@ -18,10 +18,21 @@ class UserRepository {
      * @param {string} id - El ID del usuario.
      * @returns {Promise<object|null>} El documento del usuario o null.
      */
-    async findById(id) {
-        // .findById() es un atajo optimizado de Mongoose para buscar por _id.
+  async findById(id, lean = true) {
+    if (lean) {
         return User.findById(id).lean();
+    } else {
+        return User.findById(id); // documento Mongoose completo
     }
+}
+async addReview(studentId, review) {
+    return User.findByIdAndUpdate(
+        studentId,
+        { $push: { reviews: review } },
+        { new: true }
+    );
+}
+
 
     /**
      * Guarda un nuevo usuario en la base de datos.
@@ -44,6 +55,8 @@ class UserRepository {
         return User.find({}).lean();
     }
 
+    async findOne(id){
+        return User.findById(id).lean();
 }
-
+}
 module.exports = new UserRepository();
