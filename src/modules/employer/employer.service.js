@@ -1,57 +1,65 @@
 const userRepository = require('../../shared/repositories/user.repository');
 const jobRepository = require('../../shared/repositories/job.repository');
+
 class EmployerService {
- 
-async getApplicationsByJob(employerId, jobId) {
-    const job = await jobRepository.findById(jobId);
 
-    if (!job)
-        throw { status: 404, message: "Trabajo no encontrado." };
+    async getApplicationsByJob(employerId, jobId) {
+        const job = await jobRepository.findById(jobId);
+        if (!job) throw { status: 404, message: "Trabajo no encontrado." };
 
-    // 🔹 No se valida el creador, solo se obtienen las postulaciones del trabajo
-    return await jobRepository.getApplicantsByJobId(jobId);
-}
+        if (String(job.createdBy._id) !== String(employerId)) {
+            throw { status: 403, message: "No tienes permiso para ver las postulaciones de este trabajo." };
+        }
 
-
-
-
+        return jobRepository.getApplicantsByJobId(jobId);
+    }
 
     async getApplicationsByEmployer(employerId) {
-        const employer = await userRepository.findById(employerId);
-        if (!employer) throw { status: 404, message: "Empleador no encontrado." };
-        return employer.applications || [];
+        const jobs = await jobRepository.findByEmployer(employerId);
+        return jobs.map(job => ({
+            jobId: job._id,
+            title: job.title,
+            applications: job.applications
+        }));
     }
 
-    async acceptApplicant(applicationId) {
-        const employer = await userRepository.findOne({ 'applications._id': applicationId });
-        if (!employer) throw { status: 404, message: "Aplicación no encontrada." };
+    async acceptApplicant(employerId, jobId, applicantId) {
+        const job = await jobRepository.findById(jobId);
+        if (!job) throw { status: 404, message: "Trabajo no encontrado." };
 
-        const application = employer.applications.id(applicationId);
-        application.status = 'accepted';
-        await employer.save();
+        if (String(job.createdBy._id) !== String(employerId)) {
+            throw { status: 403, message: "No tienes permiso para modificar este trabajo." };
+        }
 
-        return application;
+        const application = job.applications.find(app =>
+            String(app.applicant?._id || app.applicant) === String(applicantId)
+        );
+        if (!application) {
+            throw { status: 400, message: "El postulante no pertenece a esta oferta." };
+        }
+
+        const updatedJob = await jobRepository.acceptApplicant(jobId, applicantId);
+        return updatedJob;
     }
 
-async createReviewForStudent(studentId, calificacion, comentario) {
-    const student = await userRepository.findById(studentId);
-    if (!student) throw { status: 404, message: "Estudiante no encontrado." };
-    const review = { calificacion, comentario, date: new Date() };
-    const updatedStudent = await userRepository.addReview(studentId, review);
-    return updatedStudent.reviews.at(-1);
-}
+    async createReviewForStudent(employerId, studentId, calificacion, comentario) {
+        const student = await userRepository.findById(studentId);
+        if (!student) throw { status: 404, message: "Estudiante no encontrado." };
 
+        const review = {
+            calificacion,
+            comentario,
+            date: new Date(),
+            fromUser: employerId,
+            toUser: studentId
+        };
 
-    async getReviewsByEmployer(employerId) {
-        const employer = await userRepository.findById(employerId);
-        if (!employer) throw { status: 404, message: "Empleador no encontrado." };
-        return employer.reviews || [];
+        const updatedStudent = await userRepository.addReview(studentId, review);
+        return updatedStudent.reviews.at(-1);
     }
 
     async getJobsByEmployer(employerId) {
-        const employer = await userRepository.findById(employerId);
-        if (!employer) throw { status: 404, message: "Empleador no encontrado." };
-        return employer.jobs || [];
+        return jobRepository.findByEmployer(employerId);
     }
 
     async updateEmployer(employerId, updatedData) {
@@ -62,6 +70,17 @@ async createReviewForStudent(studentId, calificacion, comentario) {
         );
         if (!employer) throw { status: 404, message: "Empleador no encontrado." };
         return employer;
+    }
+
+    async getReviewsByEmployer(employerId) {
+        const employer = await userRepository.findById(employerId);
+        if (!employer) throw { status: 404, message: "Empleador no encontrado." };
+
+        const receivedReviews = (employer.reviews || []).filter(
+            review => String(review.toUser) === String(employerId)
+        );
+
+        return receivedReviews;
     }
 }
 

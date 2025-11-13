@@ -44,20 +44,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.post('/:id/apply', protect, async (req, res) => {
-    try {
-        if (req.user.role !== 'ESTUDIANTE') {
-            return res.status(403).json({ message: "Solo estudiantes pueden postularse a trabajos." });
-        }
 
-        const { id } = req.params; // job ID
-        const studentId = req.user.id; // tomamos el ID del token
-        const updatedJob = await jobService.applyToJob(studentId, id);
-        res.status(200).json({ message: "Postulación enviada exitosamente.", job: updatedJob });
-    } catch (error) {
-        res.status(error.status || 500).json({ message: error.message || "Error al postular al trabajo." });
-    }
-});
 
 router.post('/create', protect, async (req, res) => {
     try {
@@ -74,5 +61,20 @@ router.post('/create', protect, async (req, res) => {
         res.status(error.status || 500).json({ message: error.message || "Error al crear trabajo." });
     }
 });
+//esto lo pasasmos a postulaciones
+// router.post('/:id/apply', protect, async (req, res) => {
+//     try {
+//         if (req.user.role !== 'ESTUDIANTE') {
+//             return res.status(403).json({ message: "Solo estudiantes pueden postularse a trabajos." });
+//         }
+
+//         const { id } = req.params; // job ID
+//         const studentId = req.user.id; // tomamos el ID del token
+//         const updatedJob = await jobService.applyToJob(studentId, id);
+//         res.status(200).json({ message: "Postulación enviada exitosamente.", job: updatedJob });
+//     } catch (error) {
+//         res.status(error.status || 500).json({ message: error.message || "Error al postular al trabajo." });
+//     }
+// });
 
 module.exports = router;

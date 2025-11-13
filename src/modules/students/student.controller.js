@@ -19,16 +19,15 @@ router.get('/:userId/history', async (req, res) => {
     }
 });
 
-router.get('/:userId/reviews', async (req, res) => {    
+router.get('/reviews/:id', async (req, res) => {
     try {
-        const userId = req.params.userId;
-        const reviews = await studentService.getStudentReviews(userId);
-        res.json(reviews);
+        const studentId = req.params.id;
+        const reviews = await studentService.getReviewsByStudent(studentId);
+        res.status(200).json(reviews);
     } catch (error) {
-        res.status(error.status || 500).json({ message: error.message || "Error al cargar reseñas." });
+        res.status(error.status || 500).json({ message: error.message || "Error al obtener reseñas del estudiante." });
     }
 });
-
 router.get('/jobs/available',  protect, async (req, res) => {
     try {
         if (req.user.role !== 'ESTUDIANTE') {
@@ -39,6 +38,31 @@ router.get('/jobs/available',  protect, async (req, res) => {
         res.status(200).json(jobs);
     } catch (error) {
         res.status(error.status || 500).json({ message: error.message || "Error al obtener trabajos disponibles." });
+    }
+});
+router.post('/:employerId/reviews', protect, async (req, res) => {
+    try {
+        if (req.user.role !== 'ESTUDIANTE') {
+            return res.status(403).json({ message: "Solo estudiantes pueden dejar reseñas." });
+        }
+
+        const employerId = req.params.employerId; // 📍 receptor (a quién se deja la reseña)
+        const studentId = req.user.id;            // 📍 emisor (quién deja la reseña)
+        const { calificacion, comentario } = req.body;
+
+        const review = await studentService.createReviewForEmployer(
+            studentId,
+            employerId,
+            calificacion,
+            comentario
+        );
+
+        res.status(201).json({
+            message: "Reseña creada exitosamente.",
+            data: review
+        });
+    } catch (error) {
+        res.status(error.status || 500).json({ message: error.message || "Error al dejar la reseña." });
     }
 });
 

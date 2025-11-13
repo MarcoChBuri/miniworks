@@ -40,11 +40,7 @@ async addReview(studentId, review) {
      * @returns {Promise<object>} El nuevo usuario guardado.
      */
     async save(userData) {
-        // 1. Creamos una nueva instancia del modelo User con los datos proporcionados.
         const newUser = new User(userData);
-        
-        // 2. Usamos el método .save() para persistir el nuevo usuario en MongoDB.
-        // Mongoose se encarga de la validación, la asignación del _id y la comunicación.
         return newUser.save();
     }
     async findByCedula(cedula) {
@@ -58,5 +54,6 @@ async addReview(studentId, review) {
     async findOne(id){
         return User.findById(id).lean();
 }
+
 }
 module.exports = new UserRepository();

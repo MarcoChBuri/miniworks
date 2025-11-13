@@ -1,5 +1,5 @@
 const userRepository = require('../../shared/repositories/user.repository');
-const jobRepository = require('../../shared/repositories/job.repository'); // suponer que tienes repo de jobs
+const jobRepository = require('../../shared/repositories/job.repository');
 
 class StudentService {
 
@@ -7,39 +7,56 @@ class StudentService {
         const student = await userRepository.findById(studentId);
         if (!student) throw { status: 404, message: "Estudiante no encontrado." };
 
-        // Devolver su historial de aplicaciones
-        return student.applications || [];
+        const jobs = await jobRepository.findJobsByApplicant(studentId);
+        return jobs;
     }
 
-    async getStudentReviews(studentId) {
+    async getReviewsByStudent(studentId) {
         const student = await userRepository.findById(studentId);
         if (!student) throw { status: 404, message: "Estudiante no encontrado." };
 
-        // Devolver las reseñas recibidas
-        return student.reviews || [];
+        const receivedReviews = (student.reviews || []).filter(
+            review => String(review.toUser) === String(studentId)
+        );
+
+        return receivedReviews;
     }
 
-
-
-    async applyToJob(studentId, jobId) {
+    async applyToJob(studentId, jobId, message = '') {
         const student = await userRepository.findById(studentId);
         if (!student) throw { status: 404, message: "Estudiante no encontrado." };
 
         const job = await jobRepository.findById(jobId);
         if (!job) throw { status: 404, message: "Trabajo no encontrado." };
 
-        // Crear la aplicación y agregarla al estudiante
+        const updatedJob = await jobRepository.addApplicant(jobId, studentId, message);
+
         const application = {
-            jobId: job.id,
-            status: 'pending',
+            jobId: job._id,
+            status: 'pendiente',
             date: new Date()
         };
-
         student.applications = student.applications || [];
         student.applications.push(application);
-        await userRepository.save(student); // ojo: aquí el repo debe soportar save de documentos
+        await userRepository.save(student);
 
-        return application;
+        return updatedJob;
+    }
+
+    async createReviewForEmployer(studentId, employerId, calificacion, comentario) {
+        const employer = await userRepository.findById(employerId);
+        if (!employer) throw { status: 404, message: "Empleador no encontrado." };
+
+        const review = {
+            calificacion,
+            comentario,
+            date: new Date(),
+            fromUser: studentId,
+            toUser: employerId
+        };
+
+        const updatedEmployer = await userRepository.addReview(employerId, review);
+        return updatedEmployer.reviews.at(-1);
     }
 
 }

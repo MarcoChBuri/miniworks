@@ -1,11 +1,32 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
+const applicationSchema = new Schema({
+    applicant: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    },
+    message: {
+        type: String,
+        trim: true
+    },
+    status: {
+        type: String,
+        enum: ['pendiente', 'aceptado', 'rechazado'],
+        default: 'pendiente'
+    },
+    date: {
+        type: Date,
+        default: Date.now
+    }
+});
+
 const jobSchema = new Schema({
     title: {
         type: String,
         required: true,
-        trim: true // Quita espacios en blanco al inicio y al final
+        trim: true
     },
     description: {
         type: String,
@@ -15,32 +36,23 @@ const jobSchema = new Schema({
         type: String,
         required: true
     },
-    // --- Referencias a otros modelos ---
-    // Guardamos el ID del usuario que creó la oferta.
-    // 'ref: 'User'' le dice a Mongoose que este ID corresponde a un documento en la colección 'users'.
     createdBy: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
     },
-    // Guardamos un arreglo de IDs de los estudiantes que se han postulado.
-    applicants: [{
-        type: Schema.Types.ObjectId,
-        ref: 'User'
-    }],
-    // Guardamos el ID del estudiante que fue aceptado.
+    applications: [applicationSchema], // 👈 Subschema aquí
     acceptedCandidate: {
         type: Schema.Types.ObjectId,
         ref: 'User',
-        default: null // Por defecto, nadie ha sido aceptado
+        default: null
     },
     status: {
         type: String,
-        enum: ['abierto', 'cerrado', 'en proceso'], // El estado solo puede ser uno de estos valores.
+        enum: ['abierto', 'cerrado', 'en proceso'],
         default: 'abierto'
     }
 }, {
-    // Añade automáticamente los campos createdAt y updatedAt
     timestamps: true
 });
 

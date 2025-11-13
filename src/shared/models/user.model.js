@@ -3,7 +3,19 @@ const mongoose = require('mongoose');
 const reviewSchema = new mongoose.Schema({
     calificacion: { type: Number, required: true, min: 0, max: 5 },
     comentario: { type: String, required: true, trim: true },
-    date: { type: Date, default: Date.now }
+    date: { type: Date, default: Date.now },
+        // Etiquetas para saber quién reseña a quién
+    fromUser: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    }, // Quién hizo la reseña
+
+    toUser: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true
+    }//aquin se le hizo
 });
 const userSchema = new mongoose.Schema({
     name: {
