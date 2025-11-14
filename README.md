@@ -11,10 +11,10 @@
    - [Configurar Backend (Express.js)](#2-configurar-backend-expressjs)
    - [Configurar Frontend Web (React)](#3-configurar-frontend-web-react)
    - [Configurar Frontend Móvil (React Native)](#4-configurar-frontend-móvil-react-native)
-7. [Swagger / Documentación de Endpoints](#-swagger--documentación-de-endpoints)
-   
-Sawgger:
-https://github.com/MarcoChBuri/miniworks/tree/feature/endpoints/src/docs 
+7. [Documentacion-Arquitectura]((https://github.com/MarcoChBuri/miniworks/tree/develop/docs))
+
+
+
 
 Plataforma de **mini empleos** en la cual:
 - Los **empleados** son estudiantes de la Universidad Nacional de Loja (UNL).  
