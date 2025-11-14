@@ -11,7 +11,7 @@
    - [Configurar Backend (Express.js)](#2-configurar-backend-expressjs)
    - [Configurar Frontend Web (React)](#3-configurar-frontend-web-react)
    - [Configurar Frontend Móvil (React Native)](#4-configurar-frontend-móvil-react-native)
-7. [Documentacion-Arquitectura]((https://github.com/MarcoChBuri/miniworks/tree/develop/docs))
+7. [Documentacion-Arquitectura](https://github.com/MarcoChBuri/miniworks/tree/develop/docs)
 
 
 
