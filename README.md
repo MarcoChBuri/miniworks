@@ -1,5 +1,18 @@
 # 📌 Mini Empleos UNL
+# 📑 Índice
 
+1. [Mini Empleos UNL](#-mini-empleos-unl)
+2. [Requerimientos del Proyecto](#-requerimientos-del-proyecto)
+3. [Arquitectura Seleccionada](#-arquitectura-seleccionada)
+4. [Estándares de Codificación Adoptados](#-estándares-de-codificación-adoptados)
+5. [Flujo de Trabajo con GitFlow](#-flujo-de-trabajo-con-gitflow)
+6. [Instrucciones de Ejecución](#-instrucciones-de-ejecución)
+   - [Clonar el repositorio](#1-clonar-el-repositorio)
+   - [Configurar Backend (Express.js)](#2-configurar-backend-expressjs)
+   - [Configurar Frontend Web (React)](#3-configurar-frontend-web-react)
+   - [Configurar Frontend Móvil (React Native)](#4-configurar-frontend-móvil-react-native)
+7. [Swagger / Documentación de Endpoints](#-swagger--documentación-de-endpoints)
+   
 Sawgger:
 https://github.com/MarcoChBuri/miniworks/tree/feature/endpoints/src/docs 
 
