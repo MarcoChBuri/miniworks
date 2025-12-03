@@ -1,0 +1,5 @@
+{
+  "name": "UNL Job Portal",
+  "description": "A comprehensive job board application for students and employers of Universidad Nacional del Litoral, featuring job listings, applications, and profile management.",
+  "requestFramePermissions": []
+}
