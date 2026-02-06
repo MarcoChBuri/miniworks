@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MiniWorks - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .welcome {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .btn-logout {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <h1>💼 MiniWorks</h1>
+        <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
+    </div>
+
+    <div class="container">
+        <div class="welcome">
+            <h2 id="welcomeText">Bienvenido</h2>
+            <p id="userRole"></p>
+        </div>
+
+        <div class="cards">
+            <div class="card" onclick="viewJobs()">
+                <div class="card-icon">📋</div>
+                <h3>Ver Trabajos</h3>
+                <p>Explora las oportunidades laborales disponibles</p>
+            </div>
+
+            <div class="card" onclick="createJob()">
+                <div class="card-icon">➕</div>
+                <h3>Crear Trabajo</h3>
+                <p>Publica una nueva oferta laboral</p>
+            </div>
+
+            <div class="card" onclick="myApplications()">
+                <div class="card-icon">📝</div>
+                <h3>Mis Postulaciones</h3>
+                <p>Revisa el estado de tus aplicaciones</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if user is logged in
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            window.location.href = '/';
+        }
+
+        document.getElementById('welcomeText').textContent = `Bienvenido, ${user.name || 'Usuario'}`;
+        document.getElementById('userRole').textContent = `Rol: ${user.role || 'N/A'}`;
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/';
+        }
+
+        function viewJobs() {
+            alert('Redirigiendo a ver trabajos...');
+            // Aquí puedes hacer una llamada a GET /api/jobs
+        }
+
+        function createJob() {
+            alert('Función de crear trabajo en desarrollo');
+            // Aquí puedes hacer una llamada a POST /api/jobs
+        }
+
+        function myApplications() {
+            alert('Función de ver postulaciones en desarrollo');
+        }
+    </script>
+</body>
+
+</html>
