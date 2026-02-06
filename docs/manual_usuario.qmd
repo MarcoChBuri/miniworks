@@ -1,0 +1,54 @@
+---
+title: "Manual de Usuario y Guía de Instalación"
+subtitle: "Plataforma de Micro-empleos Universitarios"
+format:
+  pdf:
+    toc: true
+    number-sections: true
+    colorlinks: true
+---
+
+# Configuración del Entorno Móvil
+
+Para conectar la aplicación móvil con el backend, es necesario configurar la dirección IP del servidor en el archivo de entorno.
+
+1.  Navegue a la carpeta `/mobile`.
+2.  Cree o edite el archivo `.env`.
+3.  Defina la variable `API_URL` con la IP de su máquina local o servidor de desarrollo.
+
+```bash
+# Ejemplo de contenido .env en /mobile
+API_URL=http://192.168.1.50:3000/api
+```
+
+# Comandos de Instalación
+
+Siga estos pasos para desplegar el entorno de desarrollo localmente.
+
+## Backend
+
+```bash
+cd backend
+npm install
+npm run dev
+# El servidor iniciará en el puerto 3000 por defecto
+```
+
+## Mobile App (React Native)
+
+Asegúrese de tener un emulador Android/iOS corriendo o un dispositivo físico conectado.
+
+```bash
+cd mobile
+npm install
+npx react-native run-android
+# O para iOS
+# npx react-native run-ios
+```
+
+# Solución de Problemas Comunes
+
+| Problema | Causa Posible | Solución |
+|:---------|:--------------|:---------|
+| **Error: Network Request Failed** | El móvil no alcanza al backend. | Verifique que `API_URL` usa la IP local (no localhost) y que ambos dispositivos están en la misma red. |
+| **Metro Bundler no inicia** | Puerto 8081 ocupado. | Mate el proceso usando el puerto o corra `npx react-native start --reset-cache`. |
