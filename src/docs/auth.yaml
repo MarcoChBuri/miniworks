@@ -1,4 +1,3 @@
-
 tags:
   - name: Auth
     description: Endpoints de autenticación y usuarios
@@ -14,6 +13,10 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - email
+                - password
+                - name
               properties:
                 email:
                   type: string
@@ -26,12 +29,36 @@ paths:
                   example: Juan Pérez
                 role:
                   type: string
+                  enum: [ESTUDIANTE, PUBLICADOR DE TRABAJO, ADMINISTRADOR]
                   example: ESTUDIANTE
+                cedula:
+                  type: string
+                  example: "12345678"
       responses:
         201:
           description: Usuario registrado con éxito
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Usuario registrado con éxito.
+                  id:
+                    type: string
+                    example: uuid-del-usuario
+        403:
+          description: Acceso denegado (estatus de matrícula no activo)
         500:
           description: Error al registrar
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 
   /api/admin/auth/login:
     post:
@@ -43,6 +70,9 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - email
+                - password
               properties:
                 email:
                   type: string
@@ -53,15 +83,134 @@ paths:
       responses:
         200:
           description: Login exitoso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Login exitoso
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      email:
+                        type: string
+                      name:
+                        type: string
+                      role:
+                        type: string
         401:
           description: Credenciales inválidas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        500:
+          description: Error al iniciar sesión
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 
-  /api/admin/auth/report:
+  /api/admin/auth/users:
     get:
-      summary: Genera un reporte de usuarios
+      summary: Obtiene todos los usuarios (solo administradores)
       tags: [Auth]
+      security:
+        - bearerAuth: []
       responses:
         200:
-          description: Reporte generado correctamente
+          description: Lista de usuarios
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    email:
+                      type: string
+                    name:
+                      type: string
+                    role:
+                      type: string
+                    cedula:
+                      type: string
+        403:
+          description: Solo administradores pueden ver usuarios
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
         500:
-          description: Error al generar reporte
+          description: Error al cargar usuarios
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /api/admin/auth/users/{userId}:
+    get:
+      summary: Obtiene el perfil de un usuario específico
+      tags: [Auth]
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+          description: ID del usuario
+      responses:
+        200:
+          description: Perfil del usuario
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  email:
+                    type: string
+                  name:
+                    type: string
+                  role:
+                    type: string
+                  cedula:
+                    type: string
+        500:
+          description: Error al cargar perfil
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+

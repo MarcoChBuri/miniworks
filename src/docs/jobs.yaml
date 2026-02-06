@@ -1,14 +1,12 @@
-
 tags:
   - name: Jobs
     description: Endpoints para la gestión de trabajos en MiniWorks
 
 paths:
-  /jobs/all:
+  /api/jobs/all:
     get:
       summary: Obtiene todos los trabajos publicados
-      tags:
-        - Jobs
+      tags: [Jobs]
       responses:
         '200':
           description: Lista de trabajos cargada correctamente
@@ -29,9 +27,17 @@ paths:
                       type: string
                     location:
                       type: string
+                    salary:
+                      type: number
+                    createdBy:
+                      type: string
                     createdAt:
                       type: string
                       format: date-time
+                    applicants:
+                      type: array
+                      items:
+                        type: string
         '500':
           description: Error al cargar trabajos
           content:
@@ -42,11 +48,10 @@ paths:
                   message:
                     type: string
 
-  /jobs/search:
+  /api/jobs/search:
     get:
       summary: Busca trabajos por palabra clave
-      tags:
-        - Jobs
+      tags: [Jobs]
       parameters:
         - in: query
           name: query
@@ -63,6 +68,17 @@ paths:
                 type: array
                 items:
                   type: object
+                  properties:
+                    id:
+                      type: string
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    company:
+                      type: string
+                    location:
+                      type: string
         '400':
           description: Faltó la palabra clave
           content:
@@ -82,11 +98,10 @@ paths:
                   message:
                     type: string
 
-  /jobs/{id}:
+  /api/jobs/{id}:
     get:
       summary: Obtiene los detalles de un trabajo específico
-      tags:
-        - Jobs
+      tags: [Jobs]
       parameters:
         - in: path
           name: id
@@ -112,9 +127,17 @@ paths:
                     type: string
                   location:
                     type: string
+                  salary:
+                    type: number
+                  createdBy:
+                    type: string
                   createdAt:
                     type: string
                     format: date-time
+                  applicants:
+                    type: array
+                    items:
+                      type: string
         '404':
           description: Trabajo no encontrado
           content:
@@ -133,3 +156,79 @@ paths:
                 properties:
                   message:
                     type: string
+
+  /api/jobs/create:
+    post:
+      summary: Crea un nuevo trabajo (solo empleadores)
+      tags: [Jobs]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+                - company
+              properties:
+                title:
+                  type: string
+                  example: Desarrollador Backend
+                description:
+                  type: string
+                  example: Trabajo remoto para mantenimiento de API Node.js
+                company:
+                  type: string
+                  example: Tech Solutions
+      responses:
+        '201':
+          description: Trabajo creado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  job:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      title:
+                        type: string
+                      description:
+                        type: string
+                      company:
+                        type: string
+                      createdBy:
+                        type: string
+        '403':
+          description: Solo empleadores pueden crear trabajos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Error al crear trabajo
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+

@@ -1,54 +1,12 @@
-
 tags:
   - name: Students
     description: Endpoints para gestión y acciones de estudiantes en MiniWorks
 
 paths:
-  /students/register:
-    post:
-      summary: Registro de un nuevo estudiante
-      tags:
-        - Students
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                password:
-                  type: string
-                name:
-                  type: string
-      responses:
-        '201':
-          description: Usuario registrado con éxito
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                  id:
-                    type: string
-        '500':
-          description: Error al registrar
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-
-  /students/{userId}/history:
+  /api/students/{userId}/history:
     get:
       summary: Ver historial de trabajos del estudiante
-      tags:
-        - Students
+      tags: [Students]
       parameters:
         - in: path
           name: userId
@@ -65,6 +23,18 @@ paths:
                 type: array
                 items:
                   type: object
+                  properties:
+                    id:
+                      type: string
+                    title:
+                      type: string
+                    company:
+                      type: string
+                    status:
+                      type: string
+                    appliedAt:
+                      type: string
+                      format: date-time
         '500':
           description: Error al cargar historial
           content:
@@ -75,14 +45,13 @@ paths:
                   message:
                     type: string
 
-  /students/{userId}/reviews:
+  /api/students/reviews/{id}:
     get:
       summary: Ver reseñas del estudiante
-      tags:
-        - Students
+      tags: [Students]
       parameters:
         - in: path
-          name: userId
+          name: id
           required: true
           schema:
             type: string
@@ -96,6 +65,18 @@ paths:
                 type: array
                 items:
                   type: object
+                  properties:
+                    id:
+                      type: string
+                    calificacion:
+                      type: number
+                    comentario:
+                      type: string
+                    employerId:
+                      type: string
+                    createdAt:
+                      type: string
+                      format: date-time
         '500':
           description: Error al cargar reseñas
           content:
@@ -106,11 +87,12 @@ paths:
                   message:
                     type: string
 
-  /students/jobs/available:
+  /api/students/jobs/available:
     get:
       summary: Ver trabajos disponibles para estudiantes
-      tags:
-        - Students
+      tags: [Students]
+      security:
+        - bearerAuth: []
       responses:
         '200':
           description: Lista de trabajos disponibles
@@ -120,6 +102,26 @@ paths:
                 type: array
                 items:
                   type: object
+                  properties:
+                    id:
+                      type: string
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    company:
+                      type: string
+                    location:
+                      type: string
+        '403':
+          description: Solo estudiantes pueden ver trabajos disponibles
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
         '500':
           description: Error al obtener trabajos disponibles
           content:
@@ -130,30 +132,62 @@ paths:
                   message:
                     type: string
 
-  /students/jobs/{id}/apply:
+  /api/students/{employerId}/reviews:
     post:
-      summary: Postular a un trabajo
-      tags:
-        - Students
+      summary: Crea una reseña para un empleador
+      tags: [Students]
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
-          name: id
+          name: employerId
           required: true
           schema:
             type: string
-          description: ID del trabajo
+          description: ID del empleador
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              required:
+                - calificacion
+                - comentario
               properties:
-                studentId:
+                calificacion:
+                  type: number
+                  minimum: 1
+                  maximum: 5
+                  example: 4
+                comentario:
                   type: string
+                  example: "Buena empresa, recomendable."
       responses:
         '201':
-          description: Postulación enviada exitosamente
+          description: Reseña creada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      calificacion:
+                        type: number
+                      comentario:
+                        type: string
+                      studentId:
+                        type: string
+                      employerId:
+                        type: string
+        '403':
+          description: Solo estudiantes pueden dejar reseñas
           content:
             application/json:
               schema:
@@ -162,7 +196,7 @@ paths:
                   message:
                     type: string
         '500':
-          description: Error al postular
+          description: Error al dejar la reseña
           content:
             application/json:
               schema:
@@ -170,3 +204,11 @@ paths:
                 properties:
                   message:
                     type: string
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+

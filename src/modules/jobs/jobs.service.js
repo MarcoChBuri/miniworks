@@ -47,7 +47,11 @@ class JobService {
         const job = await jobRepository.findById(jobId);
         if (!job) throw { status: 404, message: "Trabajo no encontrado." };
 
-        if (job.applicants.includes(studentId))
+        // Check if student already applied using applications array
+        const alreadyApplied = job.applications?.some(
+            app => String(app.applicant) === String(studentId)
+        );
+        if (alreadyApplied)
             throw { status: 409, message: "Ya te has postulado a esta oferta." };
 
         return jobRepository.addApplicant(jobId, studentId);

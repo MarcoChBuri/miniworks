@@ -14,7 +14,7 @@ services:
 
   miniworks:
     build:
-      context: /home/marcoch/Imágenes/edison/miniworks
+      context: /home/emilio/Plataformas/miniworks
     container_name: miniworks-api
     ports:
       - "3000:3000"
@@ -27,15 +27,25 @@ services:
       - mongo
     networks:
       - kong-net
-      
+
   validadoruniversidad:
     build:
-      context: /home/marcoch/Imágenes/edison/UniversityValitator
+      context: /home/emilio/Plataformas/UniversityValitator
     container_name: validador-universidad
     ports:
       - "9000:9000"
     networks:
       - kong-net
+
+  # miniworks-app - Run separately with: cd miniworks_app && flutter run -d chrome
+  # miniworks-app:
+  #   build:
+  #     context: /home/emilio/Plataformas/miniworks/miniworks_app
+  #   container_name: miniworks-flutter-app
+  #   ports:
+  #     - "8080:80"
+  #   networks:
+  #     - kong-net
 
   kong:
     image: kong/kong-gateway:3.7.0.0

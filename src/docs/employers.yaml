@@ -3,102 +3,153 @@ tags:
     description: Endpoints relacionados con empleadores, gestión de postulaciones, reseñas y publicación de trabajos.
 
 paths:
-  /api/v1/employers/register:
-    post:
-      summary: Registra un nuevo empleador
-      tags: [Employers]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                nombre:
-                  type: string
-                  example: Juan Pérez
-                correo:
-                  type: string
-                  example: juan@empresa.com
-                password:
-                  type: string
-                  example: "123456"
-      responses:
-        201:
-          description: Empleador registrado con éxito
-        500:
-          description: Error al registrar empleador
-
-  /api/v1/employers/public/jobs:
-    post:
-      summary: Publica un nuevo trabajo
-      tags: [Employers]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                titulo:
-                  type: string
-                  example: Desarrollador Backend
-                descripcion:
-                  type: string
-                  example: Trabajo remoto para mantenimiento de API Node.js
-                salario:
-                  type: number
-                  example: 800
-                ubicacion:
-                  type: string
-                  example: Quito
-      responses:
-        201:
-          description: Trabajo publicado exitosamente
-        500:
-          description: Error al publicar trabajo
-
-  /api/v1/employers/{id}/applications:
+  /api/employers/jobs:
     get:
-      summary: Obtiene las postulaciones recibidas por un empleador
+      summary: Obtiene los trabajos publicados por el empleador autenticado
       tags: [Employers]
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Lista de trabajos del empleador
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    title:
+                      type: string
+                    description:
+                      type: string
+                    company:
+                      type: string
+                    applicants:
+                      type: array
+                      items:
+                        type: string
+        500:
+          description: Error al obtener trabajos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /api/employers/jobs/{id}/applications:
+    get:
+      summary: Obtiene las postulaciones de un trabajo específico
+      tags: [Employers]
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
           name: id
           required: true
           schema:
             type: string
-          description: ID del empleador
+          description: ID del trabajo
       responses:
         200:
-          description: Lista de postulaciones obtenida correctamente
+          description: Lista de postulaciones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    jobId:
+                      type: string
+                    studentId:
+                      type: string
+                    status:
+                      type: string
+                      enum: [PENDIENTE, ACEPTADO, RECHAZADO]
+                    appliedAt:
+                      type: string
+                      format: date-time
+                    student:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        email:
+                          type: string
+        403:
+          description: Acceso denegado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
         500:
           description: Error al obtener postulaciones
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 
-  /api/v1/employers/applications/{id}/accept:
-    put:
-      summary: Acepta un postulante
+  /api/employers/reviews:
+    get:
+      summary: Obtiene todas las reseñas del empleador autenticado
       tags: [Employers]
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-          description: ID de la postulación
+      security:
+        - bearerAuth: []
       responses:
         200:
-          description: Postulante aceptado exitosamente
+          description: Lista de reseñas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    calificacion:
+                      type: number
+                    comentario:
+                      type: string
+                    studentId:
+                      type: string
+                    createdAt:
+                      type: string
+                      format: date-time
         500:
-          description: Error al aceptar postulante
+          description: Error al obtener reseñas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 
-  /api/v1/employers/students/{id}/review:
+  /api/employers/reviews/{studentId}/send:
     post:
       summary: Crea una reseña para un estudiante
       tags: [Employers]
+      security:
+        - bearerAuth: []
       parameters:
         - in: path
-          name: id
+          name: studentId
           required: true
           schema:
             type: string
@@ -109,9 +160,14 @@ paths:
           application/json:
             schema:
               type: object
+              required:
+                - calificacion
+                - comentario
               properties:
                 calificacion:
                   type: number
+                  minimum: 1
+                  maximum: 5
                   example: 5
                 comentario:
                   type: string
@@ -119,75 +175,49 @@ paths:
       responses:
         201:
           description: Reseña creada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      calificacion:
+                        type: number
+                      comentario:
+                        type: string
+                      studentId:
+                        type: string
+                      employerId:
+                        type: string
+        403:
+          description: Solo empleadores pueden dejar reseñas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
         500:
           description: Error al dejar reseña
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
 
-  /api/v1/employers/reviews/{id}:
-    get:
-      summary: Obtiene todas las reseñas de un empleador
-      tags: [Employers]
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-          description: ID del empleador
-      responses:
-        200:
-          description: Reseñas obtenidas correctamente
-        500:
-          description: Error al obtener reseñas
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
 
-  /api/v1/employers/jobs/{id}:
-    get:
-      summary: Obtiene los trabajos publicados por un empleador
-      tags: [Employers]
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-          description: ID del empleador
-      responses:
-        200:
-          description: Lista de trabajos publicada correctamente
-        500:
-          description: Error al obtener trabajos
-
-  /api/v1/employers/profile/{id}:
-    put:
-      summary: Actualiza el perfil del empleador
-      tags: [Employers]
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-          description: ID del empleador
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                nombre:
-                  type: string
-                  example: Juan Pérez
-                empresa:
-                  type: string
-                  example: "Tech Solutions S.A."
-                ubicacion:
-                  type: string
-                  example: "Quito"
-                descripcion:
-                  type: string
-                  example: "Empresa dedicada al desarrollo de software."
-      responses:
-        200:
-          description: Perfil actualizado exitosamente
-        500:
-          description: Error al actualizar perfil
