@@ -1,0 +1,160 @@
+---
+title: "Informe Técnico Final: Plataforma de Micro-empleos Universitarios"
+author: "Equipo de Desarrollo"
+format:
+  html:
+    toc: true
+    number-sections: true
+    code-fold: true
+    theme: cosmo
+---
+
+# Introducción
+
+El presente documento detalla la arquitectura, diseño e implementación de la Plataforma de Micro-empleos Universitarios. Este sistema integra soluciones móviles y web para facilitar la conexión entre empresas que ofrecen trabajos cortos y estudiantes universitarios que buscan oportunidades laborales flexibles.
+
+La arquitectura del sistema se basa en un enfoque de microservicios para garantizar la escalabilidad y la modularidad. Un componente crítico de esta arquitectura es el servicio de validación de estudiantes, el cual interactúa con una base de datos externa de la Universidad para certificar que los postulantes son alumnos activos.
+
+La seguridad es un pilar fundamental, implementando autenticación mediante JSON Web Tokens (JWT) para el manejo de sesiones y un Token de Verificación adicional que asegura la integridad del proceso de postulación. La solución se compone de una aplicación móvil desarrollada en React Native, un frontend web, y un backend robusto en Node.js.
+
+# Arquitectura del Sistema (Modelo C4)
+
+A continuación, se presentan los diagramas de arquitectura utilizando el modelo C4 para visualizar los diferentes niveles de abstracción del sistema.
+
+## Nivel 2: Diagrama de Contenedores
+
+Este diagrama muestra los contenedores de software de alto nivel y cómo interactúan entre sí y con los actores externos.
+
+```{mermaid}
+C4Context
+  title Diagrama de Contenedores - Plataforma de Micro-empleos
+
+  Person(student, "Estudiante", "Postula a trabajos a través de la App Móvil")
+  Person(company, "Empresa", "Publica trabajos a través de la Web")
+
+  System_Boundary(microjobs, "Plataforma de Micro-empleos") {
+    Container(mobile_app, "App Móvil", "React Native", "Interfaz principal para estudiantes")
+    Container(web_app, "Web Frontend", "React/Web", "Interfaz para empresas")
+    Container(api_gateway, "API Backend", "Node.js/Express", "Maneja lógica de negocio y auth")
+    ContainerDb(internal_db, "Base de Datos Interna", "PostgreSQL/Mongo", "Almacena usuarios, trabajos y postulaciones")
+  }
+
+  System_Ext(uni_db, "Base de Datos Universidad", "Sistema Externo", "Valida matricula de estudiantes")
+
+  Rel(student, mobile_app, "Usa", "HTTPS")
+  Rel(company, web_app, "Usa", "HTTPS")
+  Rel(mobile_app, api_gateway, "API Calls", "JSON/HTTPS")
+  Rel(web_app, api_gateway, "API Calls", "JSON/HTTPS")
+  Rel(api_gateway, internal_db, "Lee/Escribe", "SQL/NoSQL")
+  Rel(api_gateway, uni_db, "Consulta estado estudiante", "HTTPS/Microservicio")
+```
+
+## Nivel 3: Diagrama de Componentes (App Móvil)
+
+Desglose de la aplicación móvil en sus componentes principales.
+
+```{mermaid}
+classDiagram
+    class MobileApp {
+        +run()
+    }
+    class UI_Layer {
+        +LoginScreen
+        +JobFeed
+        +Profile
+    }
+    class AuthService {
+        +login(creds)
+        +storeToken(jwt)
+        +getValidationToken()
+    }
+    class APIClient {
+        +getJobs()
+        +applyToJob()
+        +verifyStudentStatus()
+    }
+
+    MobileApp --> UI_Layer : Renderiza
+    UI_Layer --> AuthService : Usa para Autenticación
+    UI_Layer --> APIClient : Usa para Datos
+    AuthService --> APIClient : Solicita Tokens
+```
+
+## Nivel 4: Diagrama de Código (Login y Registro)
+
+Detalle de las clases involucradas en el proceso de autenticación.
+
+```{mermaid}
+classDiagram
+    class UserController {
+        +login(req, res)
+        +register(req, res)
+    }
+    class AuthService {
+        +validateCredentials(email, password)
+        +generateJWT(user)
+        +verifyStudentExternal(studentId)
+    }
+    class UserModel {
+        +string email
+        +string passwordHash
+        +string studentId
+        +bool isVerified
+        +save()
+        +find(email)
+    }
+
+    UserController --> AuthService : Delega lógica
+    AuthService --> UserModel : Consulta datos
+```
+
+# Manual de Usuario y Guía de Instalación
+
+## Configuración del Entorno Móvil
+
+Para conectar la aplicación móvil con el backend, es necesario configurar la dirección IP del servidor en el archivo de entorno.
+
+1.  Navegue a la carpeta `/mobile`.
+2.  Cree o edite el archivo `.env`.
+3.  Defina la variable `API_URL` con la IP de su máquina local o servidor de desarrollo.
+
+```bash
+# Ejemplo de contenido .env en /mobile
+API_URL=http://192.168.1.50:3000/api
+```
+
+## Comandos de Instalación
+
+Siga estos pasos para desplegar el entorno de desarrollo localmente.
+
+### Backend
+
+```bash
+cd backend
+npm install
+npm run dev
+# El servidor iniciará en el puerto 3000 por defecto
+```
+
+### Mobile App (React Native)
+
+Asegúrese de tener un emulador Android/iOS corriendo o un dispositivo físico conectado.
+
+```bash
+cd mobile
+npm install
+npx react-native run-android
+# O para iOS
+# npx react-native run-ios
+```
+
+# Pruebas de Integración
+
+A continuación se detallan los casos de prueba para validar la integración entre los servicios.
+
+| ID Caso | Escenario | Pasos | Resultado Esperado | Estado |
+|:-------:|:----------|:------|:-------------------|:-------|
+| **TI-01** | **Validación de estudiante regular** | 1. Estudiante ingresa credenciales.<br>2. Sistema consulta DB Universidad.<br>3. DB Universidad confirma estado "Activo". | Se genera Token de Verificación y se permite acceso completo. | ✅ Aprobado |
+| **TI-02** | **Validación de estudiante inactivo** | 1. Estudiante ingresa credenciales.<br>2. Sistema consulta DB Universidad.<br>3. DB Universidad retorna estado "Inactivo". | Login permitido pero postulación bloqueada. Mensaje de error visible. | ✅ Aprobado |
+| **TI-03** | **Postulación exitosa desde móvil** | 1. Estudiante selecciona oferta.<br>2. Clic en "Postular".<br>3. App envía JWT + Token Verificación. | Backend registra postulación y notifica éxito. | ✅ Aprobado |
+| **TI-04** | **Error de conexión con Backend** | 1. Abrir App sin conexión a internet o backend caído.<br>2. Intentar navegar. | App muestra pantalla de "Sin Conexión" o "Reintentar". | ⚠️ Pendiente |
