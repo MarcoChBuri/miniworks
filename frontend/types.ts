@@ -12,17 +12,21 @@ export interface User {
   role: UserRole;
   token?: string;
   cedula?: string;
+  company?: string;
+  location?: string;
+  description?: string;
 }
 
 export interface Job {
   id: string;
+  _id?: string;
   title: string;
   description: string;
   company: string;
   location: string;
   salary?: number;
   createdAt: string;
-  createdBy: string;
+  createdBy?: string;
   applications?: Array<{
     applicant: { _id: string; name: string; email: string };
     status: string;

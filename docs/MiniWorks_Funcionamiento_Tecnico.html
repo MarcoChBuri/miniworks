@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>MiniWorks - Funcionamiento técnico</title>
+<style>
+@page { size: A4; margin: 18mm; }
+body { font-family: Arial, sans-serif; color:#17202a; line-height:1.45; margin:0; }
+.page { max-width: 980px; margin:auto; padding:24px; }
+h1 { color:#0891b2; font-size:30px; border-bottom:3px solid #0891b2; padding-bottom:8px; }
+h2 { color:#155e75; margin-top:28px; border-bottom:1px solid #ddd; padding-bottom:5px; }
+h3 { color:#334155; }
+table { border-collapse:collapse; width:100%; margin:12px 0 18px; }
+th { background:#155e75; color:white; }
+th,td { border:1px solid #cbd5e1; padding:7px; vertical-align:top; }
+code,pre { background:#f1f5f9; border-radius:5px; }
+code { padding:2px 5px; }
+pre { padding:12px; overflow:auto; }
+.note { background:#ecfeff; border-left:5px solid #0891b2; padding:12px; }
+.warning { background:#fff7ed; border-left:5px solid #ea580c; padding:12px; }
+.diagram { border:1px solid #cbd5e1; border-radius:8px; padding:14px; background:#f8fafc; overflow:auto; }
+.box { border:2px solid #64748b; border-radius:8px; background:white; padding:9px; display:inline-block; margin:5px; text-align:center; }
+.arrow { display:inline-block; margin:7px; color:#0891b2; font-weight:bold; }
+.grid { display:flex; flex-wrap:wrap; align-items:center; justify-content:center; }
+.small { font-size:12px; color:#64748b; }
+.break { page-break-before:always; }
+</style>
+</head>
+<body>
+<div class="page">
+<h1>MiniWorks - Plataforma de Miniempleos Universitarios</h1>
+<p><strong>Documento técnico integral</strong><br>
+Aplicación de miniempleos dentro de la ciudad de Loja para estudiantes universitarios.<br>
+Versión documental: 26 de noviembre de 2026</p>
+
+<div class="note"><strong>Estado actual comprobado:</strong> API, MongoDB, Kong y frontend web están operativos; Flutter fue analizado sin errores y el APK release fue generado.</div>
+
+<h2>1. Propósito y alcance</h2>
+<p>MiniWorks conecta estudiantes universitarios con oportunidades laborales cortas, prácticas o temporales dentro de Loja. Permite que los empleadores publiquen ofertas y revisen postulantes, mientras los estudiantes buscan empleos, postulan y consultan su historial.</p>
+
+<table>
+<tr><th>Usuario</th><th>Funciones principales</th></tr>
+<tr><td>Estudiante</td><td>Registro, inicio de sesión, búsqueda de empleos, postulación, historial y reseñas.</td></tr>
+<tr><td>Empleador</td><td>Inicio de sesión, publicación de empleos, revisión de postulaciones y aceptación de candidatos.</td></tr>
+<tr><td>Administrador</td><td>Inicio de sesión y consulta de usuarios registrados.</td></tr>
+</table>
+
+<h2>2. Arquitectura general</h2>
+<div class="diagram grid">
+  <div class="box"><strong>Frontend Web</strong><br>React + Vite + TypeScript<br>:5173</div>
+  <div class="arrow">o</div>
+  <div class="box"><strong>App móvil</strong><br>Flutter<br>Android / Web</div>
+  <span class="arrow">→ HTTPS / JSON →</span>
+  <div class="box"><strong>Kong Gateway</strong><br>:8000</div>
+  <span class="arrow">→</span>
+  <div class="box"><strong>API REST</strong><br>Node.js + Express<br>:3000</div>
+</div>
+<div class="diagram grid" style="margin-top:12px">
+  <div class="box"><strong>Módulos de negocio</strong><br>Auth · Jobs · Employers<br>Students · Postulations</div>
+  <span class="arrow">→</span>
+  <div class="box"><strong>Mongoose</strong><br>Modelos y repositorios</div>
+  <span class="arrow">→</span>
+  <div class="box"><strong>MongoDB</strong><br>Usuarios · Empleos<br>Postulaciones · Reseñas</div>
+</div>
+
+<h3>2.1 Arquitectura lógica</h3>
+<p>El proyecto usa un <strong>monolito modular</strong>. No existen actualmente microservicios separados para autenticación, empleos y postulaciones, pero el código está dividido por módulos y puede extraerse hacia servicios independientes en AWS.</p>
+
+<h3>2.2 Tecnologías</h3>
+<table>
+<tr><th>Componente</th><th>Tecnología</th><th>Puerto / salida</th></tr>
+<tr><td>API</td><td>Node.js 18, Express 5, Mongoose, JWT, bcrypt</td><td>3000</td></tr>
+<tr><td>Base de datos</td><td>MongoDB 6</td><td>27018 desde el host</td></tr>
+<tr><td>Gateway</td><td>Kong Gateway declarativo</td><td>8000; administración 8001</td></tr>
+<tr><td>Web</td><td>React 18, React Router, Vite, TypeScript, Tailwind</td><td>5173</td></tr>
+<tr><td>Móvil</td><td>Flutter 3.19</td><td>Web o APK Android</td></tr>
+<tr><td>Contenedores</td><td>Docker + Docker Compose</td><td>Local</td></tr>
+</table>
+
+<h2 class="break">3. Estructura del proyecto</h2>
+<pre>miniworks/
+├── backend/
+│   ├── server.js
+│   ├── src/
+│   │   ├── config/database.js
+│   │   ├── docs/
+│   │   ├── external/university.validator.js
+│   │   ├── middlewares/auth.middleware.js
+│   │   ├── modules/
+│   │   │   ├── auth/
+│   │   │   ├── employer/
+│   │   │   ├── jobs/
+│   │   │   ├── postulation/
+│   │   │   └── students/
+│   │   └── shared/
+│   │       ├── models/
+│   │       └── repositories/
+│   └── gateway/docker-compose.yml
+├── frontend/
+│   ├── App.tsx
+│   ├── pages/
+│   ├── services/api.ts
+│   ├── contexts/
+│   └── types.ts
+├── miniworks_app/
+│   └── lib/
+│       ├── main.dart
+│       ├── providers/
+│       ├── screens/
+│       └── services/
+└── docs/</pre>
+
+<h2>4. Diagrama de componentes backend</h2>
+<div class="diagram grid">
+  <div class="box"><strong>server.js</strong><br>Configuración Express<br>Rutas y Swagger</div>
+  <span class="arrow">→</span>
+  <div class="box"><strong>Controllers</strong><br>Validan entrada<br>Construyen respuestas</div>
+  <span class="arrow">→</span>
+  <div class="box"><strong>Services</strong><br>Reglas de negocio</div>
+  <span class="arrow">→</span>
+  <div class="box"><strong>Repositories</strong><br>Acceso a MongoDB</div>
+  <span class="arrow">→</span>
+  <div class="box"><strong>Mongoose Models</strong><br>User · Job</div>
+</div>
+
+<h3>Módulos</h3>
+<table>
+<tr><th>Módulo</th><th>Responsabilidad</th><th>Archivos principales</th></tr>
+<tr><td>Auth</td><td>Registro, login, usuarios y perfiles.</td><td>auth.controller.js, auth.service.js, perfil.service.js</td></tr>
+<tr><td>Jobs</td><td>Listar, buscar y crear empleos.</td><td>jobs.controller.js, jobs.service.js</td></tr>
+<tr><td>Employers</td><td>Empleos del empleador, postulaciones y reseñas.</td><td>employer.controller.js, employer.service.js</td></tr>
+<tr><td>Students</td><td>Historial, empleos disponibles y reseñas.</td><td>student.controller.js, student.service.js</td></tr>
+<tr><td>Postulations</td><td>Crear postulaciones y aceptar candidatos.</td><td>postulation.controller.js, postulation.service.js</td></tr>
+<tr><td>Shared</td><td>Modelos y repositorios comunes.</td><td>user.model.js, job.model.js, repositorios</td></tr>
+</table>
+
+<h2>5. Diagrama de componentes frontend web</h2>
+<div class="diagram grid">
+  <div class="box"><strong>App.tsx</strong><br>Auth Context<br>Router protegido</div>
+  <span class="arrow">→</span>
+  <div class="box"><strong>Pages</strong><br>Login · Registro · Empleos<br>Paneles · Perfil · Admin</div>
+  <span class="arrow">→</span>
+  <div class="box"><strong>api.ts</strong><br>HTTP + JWT + transformaciones</div>
+  <span class="arrow">→</span>
+  <div class="box"><strong>API REST</strong></div>
+</div>
+
+<h3>Flujo de autenticación</h3>
+<div class="diagram grid">
+  <div class="box">Usuario envía credenciales</div><span class="arrow">→</span>
+  <div class="box">auth.service.js valida hash bcrypt</div><span class="arrow">→</span>
+  <div class="box">Se crea JWT firmado</div><span class="arrow">→</span>
+  <div class="box">Frontend guarda sesión en localStorage</div>
+</div>
+<p>El token se envía en el encabezado <code>Authorization: Bearer &lt;token&gt;</code>. El middleware <code>protect</code> verifica firma, expiración y usuario autenticado.</p>
+
+<h2 class="break">6. Modelo de datos</h2>
+<h3>User</h3>
+<table>
+<tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr>
+<tr><td>name</td><td>String</td><td>Nombre completo.</td></tr>
+<tr><td>email</td><td>String único</td><td>Correo de acceso.</td></tr>
+<tr><td>cedula</td><td>String único</td><td>Identificador universitario/documental.</td></tr>
+<tr><td>passwordHash</td><td>String</td><td>Contraseña cifrada con bcrypt.</td></tr>
+<tr><td>role</td><td>Enum</td><td>ESTUDIANTE, PUBLICADOR DE TRABAJO, EMPRESA o ADMINISTRADOR.</td></tr>
+<tr><td>isValidated</td><td>Boolean</td><td>Resultado de validación universitaria.</td></tr>
+<tr><td>reviews</td><td>Array</td><td>Reseñas con emisor, receptor y calificación.</td></tr>
+</table>
+
+<h3>Job</h3>
+<table>
+<tr><th>Campo</th><th>Tipo</th><th>Descripción</th></tr>
+<tr><td>title</td><td>String</td><td>Título del puesto.</td></tr>
+<tr><td>description</td><td>String</td><td>Descripción del trabajo.</td></tr>
+<tr><td>company</td><td>String</td><td>Nombre del empleador.</td></tr>
+<tr><td>location</td><td>String</td><td>Ubicación dentro de Loja.</td></tr>
+<tr><td>salary</td><td>Number</td><td>Presupuesto salarial de referencia.</td></tr>
+<tr><td>createdBy</td><td>ObjectId</td><td>Usuario empleador creador.</td></tr>
+<tr><td>applications</td><td>Array</td><td>Estudiantes postulantes, mensaje y estado.</td></tr>
+<tr><td>status</td><td>Enum</td><td>abierto, cerrado o en proceso.</td></tr>
+</table>
+
+<h2>7. Flujo de publicación y postulación</h2>
+<div class="diagram grid">
+  <div class="box">Empleador inicia sesión</div><span class="arrow">→</span>
+  <div class="box">Publica oferta con ubicación y salario</div><span class="arrow">→</span>
+  <div class="box">Oferta queda abierta</div><span class="arrow">→</span>
+  <div class="box">Estudiante postula</div><span class="arrow">→</span>
+  <div class="box">Postulación pendiente</div><span class="arrow">→</span>
+  <div class="box">Empleador acepta o rechaza</div>
+</div>
+
+<h3>Estados de una postulación</h3>
+<table>
+<tr><th>Estado</th><th>Significado</th></tr>
+<tr><td>pendiente</td><td>La solicitud fue enviada y aún no tiene decisión.</td></tr>
+<tr><td>aceptado</td><td>El empleador seleccionó al postulante.</td></tr>
+<tr><td>rechazado</td><td>El empleador descartó al postulante.</td></tr>
+</table>
+
+<h2 class="break">8. API REST</h2>
+<table>
+<tr><th>Servicio</th><th>Método</th><th>Ruta</th><th>Acceso</th></tr>
+<tr><td>Health</td><td>GET</td><td>/health</td><td>Publico</td></tr>
+<tr><td>Swagger</td><td>GET</td><td>/api-docs</td><td>Publico</td></tr>
+<tr><td>Registro</td><td>POST</td><td>/api/admin/auth/register</td><td>Publico</td></tr>
+<tr><td>Login</td><td>POST</td><td>/api/admin/auth/login</td><td>Publico</td></tr>
+<tr><td>Usuarios</td><td>GET</td><td>/api/admin/auth/users</td><td>Admin</td></tr>
+<tr><td>Perfil</td><td>GET</td><td>/api/admin/auth/users/:userId</td><td>JWT</td></tr>
+<tr><td>Empleos</td><td>GET</td><td>/api/jobs/all</td><td>Publico</td></tr>
+<tr><td>Buscar</td><td>GET</td><td>/api/jobs/search?query=x</td><td>Publico</td></tr>
+<tr><td>Detalle</td><td>GET</td><td>/api/jobs/:id</td><td>Publico</td></tr>
+<tr><td>Crear empleo</td><td>POST</td><td>/api/jobs/create</td><td>Empleador</td></tr>
+<tr><td>Mis empleos</td><td>GET</td><td>/api/employers/jobs/</td><td>Empleador</td></tr>
+<tr><td>Postulaciones</td><td>GET</td><td>/api/employers/jobs/:id/applications</td><td>Empleador</td></tr>
+<tr><td>Empleos disponibles</td><td>GET</td><td>/api/students/jobs/available</td><td>Estudiante</td></tr>
+<tr><td>Historial</td><td>GET</td><td>/api/students/:userId/history</td><td>Publico según código actual</td></tr>
+<tr><td>Postular</td><td>POST</td><td>/api/postulations/jobs/:jobId/apply</td><td>Estudiante</td></tr>
+<tr><td>Aceptar</td><td>PUT</td><td>/api/postulations/jobs/:jobId/applications/:applicationId/accept</td><td>Empleador</td></tr>
+</table>
+
+<h3>Ejemplos</h3>
+<pre>GET http://localhost:3000/api/jobs/all
+GET http://localhost:3000/api/jobs/search?query=datos
+GET http://localhost:8000/miniworks/health
+
+POST http://localhost:3000/api/admin/auth/login
+Content-Type: application/json
+
+{"email":"admin@miniworks.com","password":"Admin123!"}
+
+Authorization: Bearer &lt;JWT&gt;</pre>
+
+<h2>9. Frontend web</h2>
+<table>
+<tr><th>Hash route</th><th>Pantalla</th><th>Acceso</th></tr>
+<tr><td>#/</td><td>Inicio y empleos</td><td>Publico</td></tr>
+<tr><td>#/login</td><td>Inicio de sesión</td><td>Publico</td></tr>
+<tr><td>#/register</td><td>Registro</td><td>Publico</td></tr>
+<tr><td>#/jobs/:id</td><td>Detalle y postulación</td><td>Estudiante; public para ver</td></tr>
+<tr><td>#/dashboard</td><td>Panel estudiantil</td><td>Estudiante</td></tr>
+<tr><td>#/history</td><td>Historial</td><td>Estudiante</td></tr>
+<tr><td>#/employer-dashboard</td><td>Panel empleador</td><td>Empleador</td></tr>
+<tr><td>#/post-job</td><td>Publicación de oferta</td><td>Empleador</td></tr>
+<tr><td>#/profile</td><td>Perfil</td><td>Cualquier usuario autenticado</td></tr>
+<tr><td>#/admin-dashboard</td><td>Administración de usuarios</td><td>Administrador</td></tr>
+</table>
+
+<h2 class="break">10. Aplicación Flutter</h2>
+<p>La aplicación móvil está implementada en Flutter, no React Native. Contiene servicios para autenticación, empleos y postulaciones, Provider para estado de autenticación y pantallas para login, registro, búsqueda, publicación y dashboard.</p>
+<table>
+<tr><th>Configuración</th><th>Valor</th></tr>
+<tr><td>Base web</td><td>http://localhost:3000/api</td></tr>
+<tr><td>Base Android emulado</td><td>http://10.0.2.2:3000/api</td></tr>
+<tr><td>APK actual</td><td>miniworks_app/build/app/outputs/flutter-apk/app-release.apk</td></tr>
+<tr><td>Tamaño comprobado</td><td>20.983.901 bytes, aproximadamente 20 MB</td></tr>
+</table>
+
+<h2>11. Ejecución con Docker</h2>
+<h3>Backend completo</h3>
+<pre>cd backend/gateway
+docker compose up -d --build</pre>
+
+<h3>Estado y logs</h3>
+<pre>docker compose ps
+docker compose logs -f
+docker compose logs -f miniworks
+docker compose logs -f mongo
+docker compose logs -f kong</pre>
+
+<h3>Detener</h3>
+<pre>docker compose down
+# Conserva el volumen mongo-data
+docker compose down -v
+# Elimina también los datos de MongoDB</pre>
+
+<h3>URLs locales</h3>
+<table>
+<tr><td>Frontend web</td><td>http://localhost:5173</td></tr>
+<tr><td>API directa</td><td>http://localhost:3000</td></tr>
+<tr><td>Salud API</td><td>http://localhost:3000/health</td></tr>
+<tr><td>Swagger</td><td>http://localhost:3000/api-docs</td></tr>
+<tr><td>Kong proxy</td><td>http://localhost:8000</td></tr>
+<tr><td>Kong admin</td><td>http://localhost:8001</td></tr>
+<tr><td>Mongo host</td><td>localhost:27018</td></tr>
+</table>
+
+<h3>Frontend sin Docker</h3>
+<pre>cd frontend
+npm install
+npm run dev
+npm run build</pre>
+
+<h3>Flutter APK</h3>
+<pre>cd miniworks_app
+flutter pub get
+flutter analyze
+flutter build apk --release</pre>
+
+<h3>APK por Docker</h3>
+<pre>docker run --rm ^
+  -v "C:\ruta\miniworks\miniworks_app:/app" ^
+  -w /app ^
+  ghcr.io/cirruslabs/flutter:3.19.0 ^
+  flutter build apk --release</pre>
+
+<h2 class="break">12. Pruebas realizadas</h2>
+<table>
+<tr><th>Prueba</th><th>Resultado</th></tr>
+<tr><td>Frontend carga desde Vite</td><td>Correcto</td></tr>
+<tr><td>API /health</td><td>HTTP 200</td></tr>
+<tr><td>Ruta Kong /miniworks/health</td><td>HTTP 200</td></tr>
+<tr><td>Build React</td><td>Correcto</td></tr>
+<tr><td>Flutter analyze</td><td>Sin errores</td></tr>
+<tr><td>APK Android release</td><td>Generado</td></tr>
+<tr><td>Login administrador</td><td>Correcto</td></tr>
+<tr><td>Login empleador</td><td>Correcto</td></tr>
+<tr><td>Login estudiante</td><td>Correcto</td></tr>
+<tr><td>14 empleos en Loja</td><td>Correcto</td></tr>
+<tr><td>47 postulaciones</td><td>37 pendientes, 5 aceptadas, 5 rechazadas</td></tr>
+</table>
+
+<h2>13. Seguridad y mejoras prioritarias</h2>
+<table>
+<tr><th>Aspecto</th><th>Estado actual</th><th>Mejora recomendada</th></tr>
+<tr><td>Secretos</td><td>JWT definido en Compose</td><td>AWS Secrets Manager o .env externo.</td></tr>
+<tr><td>HTTPS</td><td>Solo HTTP local</td><td>ALB + ACM + dominio propio.</td></tr>
+<tr><td>Usuarios</td><td>Contraseñas demostrativas</td><td>Cambiar todas las claves en producción.</td></tr>
+<tr><td>Roles</td><td>Protección básica por JWT</td><td>RBAC centralizado y autorización por recurso.</td></tr>
+<tr><td>Base de datos</td><td>Mongo local con volumen</td><td>MongoDB Atlas o Amazon DocumentDB.</td></tr>
+<tr><td>Validación</td><td>Microservicio desactivado</td><td>API real de matrícula de la UNL.</td></tr>
+<tr><td>Pruebas</td><td>Pruebas manuales</td><td>Jest/Supertest, integración y CI.</td></tr>
+<tr><td>Observabilidad</td><td>Logs básicos Docker</td><td>CloudWatch, Sentry y métricas.</td></tr>
+<tr><td>Backups</td><td>Volumen local</td><td>Snapshots, Point-in-Time Recovery y restauración.</td></tr>
+</table>
+
+<h2 class="break">14. Despliegue recomendado en AWS</h2>
+<h3>Diagrama AWS</h3>
+<div class="diagram grid">
+  <div class="box"><strong>Usuarios</strong><br>Web · Android</div>
+  <span class="arrow">→</span>
+  <div class="box"><strong>Route 53</strong><br>DNS</div>
+  <span class="arrow">→</span>
+  <div class="box"><strong>CloudFront</strong><br>React estático<br>S3</div>
+  <span class="arrow">y</span>
+  <div class="box"><strong>ACM + ALB</strong><br>HTTPS API</div>
+  <span class="arrow">→</span>
+  <div class="box"><strong>ECS Fargate</strong><br>MiniWorks API</div>
+</div>
+<div class="diagram grid" style="margin-top:12px">
+  <div class="box"><strong>MongoDB Atlas</strong><br>Recomendado</div>
+  <div class="arrow">o</div>
+  <div class="box"><strong>Amazon DocumentDB</strong><br>Compatible con Mongo</div>
+  <span class="arrow">←</span>
+  <div class="box"><strong>Amazon VPC</strong><br>Subred privada<br>Security Groups</div>
+</div>
+
+<h3>Servicios AWS</h3>
+<table>
+<tr><th>Servicio</th><th>Uso</th></tr>
+<tr><td>Route 53</td><td>Dominio miniworks.example.</td></tr>
+<tr><td>ACM</td><td>Certificados HTTPS.</td></tr>
+<tr><td>S3</td><td>Frontend React compilado y backups.</td></tr>
+<tr><td>CloudFront</td><td>Distribución mundial, caché y TLS.</td></tr>
+<tr><td>ALB</td><td>Entrada segura al API y balanceo.</td></tr>
+<tr><td>ECS Fargate</td><td>Ejecución de contenedor Express sin administrar servidores.</td></tr>
+<tr><td>Secrets Manager</td><td>JWT_SECRET, credenciales y URI MongoDB.</td></tr>
+<tr><td>ECR</td><td>Almacenar imágenes Docker del backend.</td></tr>
+<tr><td>VPC</td><td>Red privada y control de conectividad.</td></tr>
+<tr><td>DocumentDB/Atlas</td><td>Base de datos administrada.</td></tr>
+<tr><td>CloudWatch</td><td>Logs, métricas y alarmas.</td></tr>
+<tr><td>WAF</td><td>Bloqueo de ataques y límites de solicitudes.</td></tr>
+<tr><td>GitHub Actions</td><td>CI/CD de construcción y despliegue.</td></tr>
+</table>
+
+<h3>Flujo de despliegue AWS</h3>
+<div class="diagram grid">
+  <div class="box">Push a GitHub</div><span class="arrow">→</span>
+  <div class="box">GitHub Actions ejecuta tests y build</div><span class="arrow">→</span>
+  <div class="box">Imagen Docker a ECR</div><span class="arrow">→</span>
+  <div class="box">ECS despliega nueva tarea</div><span class="arrow">→</span>
+  <div class="box">ALB cambia tráfico a versión saludable</div>
+</div>
+
+<h3>Comandos AWS conceptuales</h3>
+<pre>aws ecr create-repository --repository-name miniworks-api
+docker build -t miniworks-api backend
+docker tag miniworks-api:latest &lt;account&gt;.dkr.ecr.&lt;region&gt;.amazonaws.com/miniworks-api:latest
+aws ecr get-login-password --region &lt;region&gt; | docker login --username AWS --password-stdin &lt;account&gt;.dkr.ecr.&lt;region&gt;.amazonaws.com
+docker push &lt;account&gt;.dkr.ecr.&lt;region&gt;.amazonaws.com/miniworks-api:latest
+
+aws ecs create-cluster --cluster-name miniworks-cluster
+
+npm run build
+aws s3 sync frontend/dist s3://&lt;bucket&gt; --delete
+aws cloudfront create-invalidation --distribution-id &lt;id&gt; --paths "/*"</pre>
+
+<h3>Variables de producción</h3>
+<pre>PORT=3000
+MONGODB_URL=&lt;URI secreta desde Secrets Manager&gt;
+JWT_SECRET=&lt;secreto aleatorio largo&gt;
+JWT_EXPIRES_IN=1h
+UNIVERSITY_VALIDATOR_ENABLED=true
+UNIVERSITY_VALIDATOR_URL=&lt;URL HTTPS validación de universidad&gt;</pre>
+
+<h2>15. Infraestructura como código</h2>
+<p>Para producción se recomienda ECS con Terraform o AWS CDK. El repositorio debe agregar al menos:</p>
+<pre>infra/
+├── modules/
+│   ├── vpc/
+│   ├── ecr/
+│   ├── ecs/
+│   ├── alb/
+│   ├── s3-cloudfront/
+│   ├── route53-acm/
+│   └── database/
+└── environments/
+    ├── dev/
+    ├── staging/
+    └── prod/</pre>
+
+<h2>16. Base de datos y backups</h2>
+<table>
+<tr><th>Entorno</th><th>Recomendación</th></tr>
+<tr><td>Desarrollo</td><td>MongoDB Docker local.</td></tr>
+<tr><td>Staging</td><td>MongoDB Atlas M10 o DocumentDB con respaldo diario.</td></tr>
+<tr><td>Producción</td><td>MongoDB Atlas con replicación multi-AZ y PITR.</td></tr>
+</table>
+
+<h2>17. Operación en Amazon para móviles</h2>
+<p>Para Android: instalar el APK en desarrollo, subirlo a Google Play Console en producción y usar API HTTPS. Para iOS: compilar con macOS, certificados Apple y distribución App Store. El APK actual no es apto para distribución pública hasta firmarlo con una clave propia y configurar el dominio productivo.</p>
+
+<h2>18. Lista de trabajo para producción</h2>
+<ol>
+<li>Crear dominio y certificado ACM.</li>
+<li>Configurar Secrets Manager y eliminar secretos de Compose.</li>
+<li>Migrar MongoDB a Atlas o DocumentDB.</li>
+<li>Crear pipeline GitHub Actions.</li>
+<li>Desplegar API en ECS Fargate detrás de ALB/WAF.</li>
+<li>Publicar React en S3/CloudFront.</li>
+<li>Probar validador universitario real.</li>
+<li>Crear usuarios iniciales con claves temporales.</li>
+<li>Agregar tests y respaldos automáticos.</li>
+<li>Configurar monitoreo y alarmas.</li>
+<li>Firmar APK/AAB y preparar publicación Android.</li>
+</ol>
+
+<p class="small">Documento generado a partir del estado y las pruebas actuales del repositorio MiniWorks.</p>
+</div>
+</body>
+</html>

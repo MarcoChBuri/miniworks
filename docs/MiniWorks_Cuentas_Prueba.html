@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>MiniWorks - Cuentas de prueba</title>
+<style>
+@page { size:A4; margin:18mm; }
+body { font-family:Arial,sans-serif; color:#17202a; line-height:1.45; }
+.page { max-width:900px; margin:auto; padding:20px; }
+h1 { color:#0891b2; border-bottom:3px solid #0891b2; padding-bottom:8px; }
+h2 { color:#155e75; }
+table { border-collapse:collapse; width:100%; }
+th { background:#155e75; color:white; }
+th,td { border:1px solid #cbd5e1; padding:9px; text-align:left; }
+.warning { background:#fff7ed; border-left:5px solid #ea580c; padding:12px; }
+code { background:#f1f5f9; padding:3px 6px; border-radius:4px; }
+</style>
+</head>
+<body>
+<div class="page">
+<h1>MiniWorks - Usuarios y claves de prueba</h1>
+<div class="warning"><strong>Uso exclusivo de demostración.</strong> Estas claves fueron creadas para pruebas locales y no deben usarse en producción.</div>
+
+<h2>Administrador</h2>
+<table>
+<tr><th>Correo</th><td><code>admin@miniworks.com</code></td></tr>
+<tr><th>Contraseña</th><td><code>Admin123!</code></td></tr>
+<tr><th>Rol</th><td>ADMINISTRADOR</td></tr>
+<tr><th>Acceso</th><td><a href="http://localhost:5173/#/login">Inicio de sesión</a> → <a href="http://localhost:5173/#/admin-dashboard">Administración</a></td></tr>
+</table>
+
+<h2>Empleador principal</h2>
+<table>
+<tr><th>Correo</th><td><code>empleador@miniworks.com</code></td></tr>
+<tr><th>Contraseña</th><td><code>Empleador123!</code></td></tr>
+<tr><th>Rol</th><td>PUBLICADOR DE TRABAJO</td></tr>
+<tr><th>Nombre mostrado</th><td>Consorcio Empresarial Loja</td></tr>
+<tr><th>Acceso</th><td><a href="http://localhost:5173/#/login">Inicio de sesión</a> → <a href="http://localhost:5173/#/employer-dashboard">Panel empleador</a></td></tr>
+</table>
+
+<h2>Estudiante principal</h2>
+<table>
+<tr><th>Correo</th><td><code>estudiante@miniworks.com</code></td></tr>
+<tr><th>Contraseña</th><td><code>Estudiante123!</code></td></tr>
+<tr><th>Rol</th><td>ESTUDIANTE</td></tr>
+<tr><th>Acceso</th><td><a href="http://localhost:5173/#/login">Inicio de sesión</a> → <a href="http://localhost:5173/#/dashboard">Panel estudiante</a></td></tr>
+</table>
+
+<h2>Estudiantes adicionales</h2>
+<table>
+<tr><th>Nombre</th><th>Correo</th><th>Contraseña</th></tr>
+<tr><td>Ana Torres</td><td><code>ana.torres@miniworks.com</code></td><td><code>Prueba123!</code></td></tr>
+<tr><td>Luis Pérez</td><td><code>luis.perez@miniworks.com</code></td><td><code>Prueba123!</code></td></tr>
+<tr><td>María Castillo</td><td><code>maria.castillo@miniworks.com</code></td><td><code>Prueba123!</code></td></tr>
+<tr><td>Carlos Andrade</td><td><code>carlos.andrade@miniworks.com</code></td><td><code>Prueba123!</code></td></tr>
+<tr><td>Valentina Ruiz</td><td><code>valentina.ruiz@miniworks.com</code></td><td><code>Prueba123!</code></td></tr>
+<tr><td>Diego Molina</td><td><code>diego.molina@miniworks.com</code></td><td><code>Prueba123!</code></td></tr>
+<tr><td>Sofía Vega</td><td><code>sofia.vega@miniworks.com</code></td><td><code>Prueba123!</code></td></tr>
+<tr><td>Javier León</td><td><code>javier.leon@miniworks.com</code></td><td><code>Prueba123!</code></td></tr>
+</table>
+
+<h2>Datos existentes</h2>
+<ul>
+<li>14 empleos dentro de la ciudad de Loja.</li>
+<li>47 postulaciones totales.</li>
+<li>37 postulaciones pendientes.</li>
+<li>5 postulaciones aceptadas.</li>
+<li>5 postulaciones rechazadas.</li>
+</ul>
+
+<h2>URL principales</h2>
+<table>
+<tr><th>Servicio</th><th>URL</th></tr>
+<tr><td>Frontend web</td><td><code>http://localhost:5173</code></td></tr>
+<tr><td>API directa</td><td><code>http://localhost:3000</code></td></tr>
+<tr><td>Salud API</td><td><code>http://localhost:3000/health</code></td></tr>
+<tr><td>Swagger</td><td><code>http://localhost:3000/api-docs</code></td></tr>
+<tr><td>Kong</td><td><code>http://localhost:8000</code></td></tr>
+</table>
+
+<h2>Clave JWT usada en Docker local</h2>
+<p><code>este-es-un-secreto-muy-dificil-de-adivinar-1234</code></p>
+<p>Únicamente para demostración local. En AWS debe reemplazarse por un secreto generado y almacenado en AWS Secrets Manager.</p>
+</div>
+</body>
+</html>

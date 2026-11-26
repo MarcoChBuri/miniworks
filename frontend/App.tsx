@@ -53,6 +53,9 @@ const Navbar = () => {
                 <Link to="/history" className="text-gray-600 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 font-medium transition-colors">Historial</Link>
               </>
             )}
+            {user?.role === UserRole.ADMIN && (
+              <Link to="/admin-dashboard" className="text-gray-600 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 font-medium transition-colors">Administracion</Link>
+            )}
             {user?.role === UserRole.EMPLOYER && (
               <>
                 <Link to="/employer-dashboard" className="text-gray-600 dark:text-gray-300 hover:text-cyan-500 dark:hover:text-cyan-400 font-medium transition-colors">Gestión</Link>
@@ -119,6 +122,7 @@ import PostJobPage from './pages/PostJobPage';
 import ProfilePage from './pages/ProfilePage';
 import JobDetailsPage from './pages/JobDetailsPage';
 import StudentHistoryPage from './pages/StudentHistoryPage';
+import AdminDashboard from './pages/AdminDashboard';
 
 const App = () => {
   const [user, setUser] = useState<User | null>(() => {
@@ -183,6 +187,11 @@ const App = () => {
                 <Route path="/profile" element={
                   <ProtectedRoute>
                     <ProfilePage />
+                  </ProtectedRoute>
+                } />
+                <Route path="/admin-dashboard" element={
+                  <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
+                    <AdminDashboard />
                   </ProtectedRoute>
                 } />
               </Routes>

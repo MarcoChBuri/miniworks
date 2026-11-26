@@ -52,10 +52,10 @@ router.post('/create', protect, async (req, res) => {
             return res.status(403).json({ message: "Solo empleadores pueden crear trabajos." });
         }
 
-        const { title, description, company } = req.body;
+        const { title, description, company, location, salary } = req.body;
         const createdBy = req.user.id;
 
-        const newJob = await jobService.createJob(title, description, company, createdBy);
+        const newJob = await jobService.createJob(title, description, company, location, salary, createdBy);
         res.status(201).json({ message: "Trabajo creado exitosamente.", job: newJob });
     } catch (error) {
         res.status(error.status || 500).json({ message: error.message || "Error al crear trabajo." });

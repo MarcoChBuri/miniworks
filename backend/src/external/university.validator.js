@@ -2,8 +2,12 @@ const fetch = require('node-fetch');
 
 class UniversityValidator {
     async validateStatus(email) {
+        if (process.env.UNIVERSITY_VALIDATOR_ENABLED === 'false') {
+            return true;
+        }
+
         console.log(`[EXT] Consultando estatus de matrícula para: ${email}`);
-        const url = 'http://validadoruniversidad:9000/students/validate';
+        const url = process.env.UNIVERSITY_VALIDATOR_URL || 'http://validadoruniversidad:9000/students/validate';
 
         try {
             const response = await fetch(url, {

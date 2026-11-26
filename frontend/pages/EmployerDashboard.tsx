@@ -32,7 +32,7 @@ const EmployerDashboard = () => {
   const loadApplications = async (job: Job) => {
   setSelectedJob(job);
   try {
-    const data = await api.employers.getApplications(job._id);
+    const data = await api.employers.getApplications(job._id || job.id);
     setApplications(data);
   } catch (err: any) {
     alert(err.message);

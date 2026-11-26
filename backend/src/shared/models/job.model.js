@@ -36,6 +36,15 @@ const jobSchema = new Schema({
         type: String,
         required: true
     },
+    location: {
+        type: String,
+        required: true,
+        default: "Loja"
+    },
+    salary: {
+        type: Number,
+        default: null
+    },
     createdBy: {
         type: Schema.Types.ObjectId,
         ref: 'User',

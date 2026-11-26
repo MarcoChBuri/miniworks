@@ -7,10 +7,3 @@ services:
       - name: miniworks-route
         paths:
           - /miniworks
-
-  - name: validadoruniversidad
-    url: http://validadoruniversidad:9000
-    routes:
-      - name: validadoruniversidad-route
-        paths:
-          - /validadoruniversidad

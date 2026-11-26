@@ -23,7 +23,7 @@ class JobService {
         return job;
     }
 
-    async createJob(title, description, company, createdById) {
+    async createJob(title, description, company, location, salary, createdById) {
         if (!title || !description || !company)
             throw { status: 400, message: "Faltan datos obligatorios: título, descripción o empresa." };
 
@@ -37,6 +37,8 @@ class JobService {
             title,
             description,
             company,
+            location: location || "Loja",
+            salary: salary || null,
             createdBy: createdById
         };
 

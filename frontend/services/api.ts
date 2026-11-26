@@ -1,7 +1,7 @@
 
 import { User, UserRole, Job, Application, Review } from '../types';
 
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api').replace(/\/$/, '');
 
 const getAuthHeader = (): Record<string, string> => {
   const saved = localStorage.getItem('miniworks_user');

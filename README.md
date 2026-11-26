@@ -135,19 +135,37 @@ El proyecto se puede implementar bajo dos enfoques:
 ```bash
 git clone https://github.com/usuario/mini-empleos-unl.git
 cd mini-empleos-unl
+```
 
-### 2. Configurar Backend (Express.js)
-cd backend
+### 2. Ejecutar backend, MongoDB y Kong
+```bash
+cd backend/gateway
+docker compose up -d --build
+```
+
+Servicios disponibles:
+- API: `http://localhost:3000`
+- Salud de API: `http://localhost:3000/health`
+- Kong: `http://localhost:8000`
+- Swagger: `http://localhost:3000/api-docs`
+
+### 3. Ejecutar frontend web
+```bash
+cd frontend
 npm install
-cp .env.example .env   # Configurar variables de entorno (MongoDB URI, JWT_SECRET, etc.)
 npm run dev
+```
 
-### 3. Configurar Frontend Web (React)
-cd frontend-web
-npm install
-npm start
+El frontend estará disponible en `http://localhost:5173`.
 
-### 3. Configurar Frontend Web (React)
-cd frontend-mobile
-npm install
-npx expo start
+Para cambiar la API:
+```bash
+cp frontend/.env.example frontend/.env
+```
+
+### 4. Ejecutar aplicación Flutter
+```bash
+cd miniworks_app
+flutter pub get
+flutter run -d chrome
+```

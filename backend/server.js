@@ -17,7 +17,9 @@ app.use(express.json());
 app.use(cors());
 
 // Conectar a la base de datos
-connectDB();
+connectDB().catch(() => {
+    process.exitCode = 1;
+});
 
 // 🧩 Rutas principales
 app.use('/api/admin/auth', authRoutes);
@@ -29,6 +31,10 @@ app.use('/api/postulations', postulacionRoutes);
 // Swagger UI
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok' });
+});
+
 // Servidor
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 app.listen(PORT, () => console.log(`Servidor corriendo en http://localhost:${PORT}`));

@@ -2,12 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../services/api';
 import { useAuth } from '../App';
-import { Job } from '../types';
+import { Application, Job } from '../types';
 import { History, Calendar, CheckCircle, Clock } from 'lucide-react';
 
 const StudentHistoryPage = () => {
   const { user } = useAuth();
-  const [history, setHistory] = useState<Job[]>([]);
+  const [history, setHistory] = useState<Array<Job | Application>>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -44,12 +44,12 @@ const StudentHistoryPage = () => {
           {history.map(item => (
             <div key={item.id} className="bg-white dark:bg-gray-800 p-6 rounded-3xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all hover:border-cyan-100 dark:hover:border-cyan-900">
               <div className="space-y-1">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">{item.title}</h3>
-                <p className="text-gray-600 dark:text-gray-400 font-medium">{item.company}</p>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white">{'title' in item ? item.title : item.jobTitle || 'Postulación'}</h3>
+                <p className="text-gray-600 dark:text-gray-400 font-medium">{'company' in item ? item.company : 'Empresa no disponible'}</p>
                 <div className="flex items-center gap-3 text-sm text-gray-400 dark:text-gray-500">
-                  <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> {new Date(item.createdAt).toLocaleDateString()}</span>
+                  <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> {new Date('createdAt' in item ? item.createdAt : item.appliedAt).toLocaleDateString()}</span>
                   <span>•</span>
-                  <span>{item.location}</span>
+                  <span>{'location' in item ? item.location : 'Ubicación no disponible'}</span>
                 </div>
               </div>
               <div className="flex flex-col items-end gap-2">
